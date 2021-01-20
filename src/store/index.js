@@ -4,7 +4,7 @@ import router from '../router'
 
 Vue.use(Vuex)
 
-const host = 'http://47.111.25.1:5555'
+const host = 'https://ml-api.newitd.com'
 
 export default new Vuex.Store({
   state: {
