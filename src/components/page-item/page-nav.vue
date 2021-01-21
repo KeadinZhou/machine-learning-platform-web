@@ -2,7 +2,7 @@
   <div class="page-nav" v-if="current_page.page !== 'login' && current_page.page !== 'register'">
     <div class="page-nav-title-icon">
       <div class="page-nav-icon">
-        <a-icon type="folder-open" />
+        <a-icon :type="current_page.icon" />
       </div>
       <div class="page-nav-title">
         <span>{{current_page.title}}</span>
@@ -15,7 +15,8 @@
         </a>
         <a-menu slot="overlay">
           <a-menu-item key="1">修改密码</a-menu-item>
-          <a-menu-item key="2" @click="logout">退出登录</a-menu-item>
+          <a-menu-item key="2" v-if="user.permission === 1">用户管理</a-menu-item>
+          <a-menu-item key="3" @click="logout">退出登录</a-menu-item>
         </a-menu>
       </a-dropdown>
     </a-space>

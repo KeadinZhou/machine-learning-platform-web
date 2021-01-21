@@ -1,18 +1,68 @@
 <template>
   <div>
-    Project
+    {{projectInfo}}
   </div>
 </template>
 
 <script>
+import {mapState} from "vuex";
+
 export default {
   name: "Project",
+  data() {
+    return {
+      loading: false,
+      projectInfoLoaded: false,
+      projectInfo: {
+        id: '',
+        name: '',
+        description: '',
+        tag: ''
+      }
+    }
+  },
+  computed: {
+    ...mapState(['host'])
+  },
+  methods: {
+    getData() {
+      let that = this
+      let project_id = that.$route.params.id
+      that.loading = true
+      that.$http.get(that.host + `/project/${project_id}`)
+          .then(data => {
+            that.projectInfo = data.data
+            that.projectInfoLoaded = true
+            that.$store.commit('updateCurrentPage', {
+              page: 'project_open',
+              icon: 'apartment',
+              title: `项目建模 - ${that.projectInfo.name}`
+            })
+          })
+          .catch((error) => {
+            if (error.response) {
+              that.$message.error(error.response.data.message)
+            } else {
+              that.$message.error('请求失败')
+            }
+          })
+          .finally(() => {
+            that.loading = false
+          })
+    }
+  },
   created() {
     this.$store.commit('updateCurrentPage', {
-      page: 'project',
-      icon: 'folder-open',
-      title: '项目列表'
+      page: 'project_open',
+      icon: 'apartment',
+      title: '项目建模'
     })
+    this.getData()
+  },
+  watch: {
+    '$route': function () {
+      this.getData()
+    }
   }
 }
 </script>

@@ -22,6 +22,11 @@ const routes = [
   {
     path: '/project',
     name: 'project',
+    component: () => import('@/views/Projects')
+  },
+  {
+    path: '/project/:id',
+    name: 'project_open',
     component: () => import('@/views/Project')
   },
 ]
