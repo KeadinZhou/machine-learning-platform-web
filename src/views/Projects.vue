@@ -13,7 +13,7 @@
 
 <script>
 import {mapState} from "vuex"
-import ProjectListItem from '@/components/project/project-list-item'
+import ProjectListItem from '@/components/projects/project-list-item'
 import LoadingBoxFrame from '@/components/frame/loading-box-frame'
 
 export default {

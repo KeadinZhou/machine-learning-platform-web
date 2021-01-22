@@ -17,7 +17,7 @@ export default new Vuex.Store({
         if (res) {
           res += '&'
         }
-        res += `${item}=${data[item]}`
+        res += `${item}=${encodeURIComponent(data[item])}`
       }
       if (res) {
         res = '?' + res

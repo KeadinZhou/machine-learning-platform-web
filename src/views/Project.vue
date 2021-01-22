@@ -1,14 +1,18 @@
 <template>
-  <div>
-    {{projectInfo}}
+  <div style="height: 100%">
+    <project-file-tree style="width: 250px"></project-file-tree>
   </div>
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapState} from "vuex"
+import ProjectFileTree from '@/components/project/project-file-tree'
 
 export default {
   name: "Project",
+  components: {
+    'project-file-tree': ProjectFileTree
+  },
   data() {
     return {
       loading: false,

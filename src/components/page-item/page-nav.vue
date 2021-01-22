@@ -44,6 +44,8 @@ export default {
     box-shadow: 0 1px 4px rgba(0,21,41,.12);
     display: flex;
     justify-content: space-between;
+    z-index: 100;
+    position: absolute;
   }
   .page-nav-title-icon{
     display: flex;

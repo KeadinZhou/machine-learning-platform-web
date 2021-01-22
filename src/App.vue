@@ -23,7 +23,7 @@ export default {
     fixPageSize() {
       this.clientHeight = window.innerHeight
       this.clientWidth = window.innerWidth
-      this.$refs.pageBox.style.minHeight = this.clientHeight - 65 + 'px'
+      this.$refs.pageBox.style.height = this.clientHeight - 65 + 'px'
     }
   },
   mounted() {
@@ -58,6 +58,7 @@ export default {
 #mainBox{
   width: 100%;
   position: relative;
+  margin-top: 65px;
 }
 
 .ant-menu-horizontal {
