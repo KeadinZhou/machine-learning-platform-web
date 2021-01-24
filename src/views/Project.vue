@@ -3,6 +3,7 @@
     <project-file-tree style="width: 250px"></project-file-tree>
     <project-default-node style="width: calc(100% - 250px + 20px)"></project-default-node>
     <project-actions-bar style="width: 30px"></project-actions-bar>
+    <project-editor class="project-editor-container"></project-editor>
   </div>
 </template>
 
@@ -11,12 +12,14 @@ import {mapState} from "vuex"
 import ProjectFileTree from '@/components/project/project-file-tree'
 import ProjectDefaultNode from '@/components/project/project-default-node'
 import ProjectActionsBar from '@/components/project/project-actions-bar'
+import ProjectEditor from "@/components/project/project-editor";
 export default {
   name: "Project",
   components: {
     'project-file-tree': ProjectFileTree,
     'project-default-node': ProjectDefaultNode,
-    'project-actions-bar': ProjectActionsBar
+    'project-actions-bar': ProjectActionsBar,
+    'project-editor': ProjectEditor
   },
   data() {
     return {
@@ -77,5 +80,10 @@ export default {
 </script>
 
 <style scoped>
-
+  .project-editor-container{
+    position: absolute;
+    width: calc(100% - 250px - 30px);
+    height: calc(100% - 180px);
+    left: 250px;
+  }
 </style>

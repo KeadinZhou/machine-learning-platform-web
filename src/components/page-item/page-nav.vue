@@ -41,7 +41,7 @@ export default {
     width: 100%;
     height: 65px;
     background: white;
-    box-shadow: 0 1px 4px rgba(0,21,41,.12);
+    box-shadow: 0 8px 12px 0 rgba(0, 52, 107, 0.04);
     display: flex;
     justify-content: space-between;
     z-index: 100;

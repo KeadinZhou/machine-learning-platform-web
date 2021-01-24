@@ -4,14 +4,18 @@
       模型组件
     </div>
     <div class="project-default-node-box-content">
-
+      <project-node-list-box></project-node-list-box>
     </div>
   </div>
 </template>
 
 <script>
+import ProjectNodeListBox from '@/components/project/project-node-list-box'
 export default {
-name: "project-default-node"
+  name: "project-default-node",
+  components: {
+    'project-node-list-box': ProjectNodeListBox
+  }
 }
 </script>
 

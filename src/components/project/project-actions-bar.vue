@@ -16,7 +16,7 @@ export default {
 .project-actions-bar{
   width: 100%;
   height: 100%;
-  box-shadow: 0 1px 4px rgba(0,21,41,.21);
+  box-shadow: 0 1px 12px rgba(0,21,41,.21);
   position: absolute;
   z-index: 94;
   bottom: 0;
@@ -29,7 +29,15 @@ export default {
 }
 .bar-button{
   margin: 5px 0;
-  cursor: pointer;
   font-size: 16px;
+  line-height: 28px;
+  width: 28px;
+  height: 28px;
+  text-align: center;
+  color: rgb(89,89,89);
+}
+.bar-button:hover{
+  cursor: pointer;
+  border: 1px solid #e9e9e9;
 }
 </style>
