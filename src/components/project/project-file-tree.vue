@@ -312,6 +312,10 @@ export default {
   width: 100%;
   height: 100%;
   box-shadow: 0 1px 4px rgba(0,21,41,.21);
+  position: absolute;
+  z-index: 98;
+  left: 0;
+  bottom: 0;
 }
 .project-file-tree-box-title{
   background: #DADADA;
@@ -324,11 +328,12 @@ export default {
 .project-file-tree-box-content{
   height: calc(100% - 45px - 32px);
   overflow: auto;
+  background: white;
 }
 .project-file-tree-edit-box{
   height: 32px;
   width: 100%;
-  background: rgba(0,0,0,0.05);
+  background: rgb(242,242,242);
   display: flex;
   font-size: 18px;
   justify-content: space-around;

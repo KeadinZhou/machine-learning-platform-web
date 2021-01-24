@@ -1,17 +1,22 @@
 <template>
   <div style="height: 100%">
     <project-file-tree style="width: 250px"></project-file-tree>
+    <project-default-node style="width: calc(100% - 250px + 20px)"></project-default-node>
+    <project-actions-bar style="width: 30px"></project-actions-bar>
   </div>
 </template>
 
 <script>
 import {mapState} from "vuex"
 import ProjectFileTree from '@/components/project/project-file-tree'
-
+import ProjectDefaultNode from '@/components/project/project-default-node'
+import ProjectActionsBar from '@/components/project/project-actions-bar'
 export default {
   name: "Project",
   components: {
-    'project-file-tree': ProjectFileTree
+    'project-file-tree': ProjectFileTree,
+    'project-default-node': ProjectDefaultNode,
+    'project-actions-bar': ProjectActionsBar
   },
   data() {
     return {
