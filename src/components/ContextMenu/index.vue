@@ -247,7 +247,7 @@ export default {
     },
     showFileClick() {
       this.csvVisible = true
-      this.getFile('y.csv')
+      this.getFile('x.csv')
     },
     getFile(filename) {
       let that = this
