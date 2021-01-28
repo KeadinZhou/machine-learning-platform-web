@@ -146,8 +146,6 @@ export default {
         this.undoList = data.undoList;
       });
       eventBus.$on("updateItem", item => {
-        console.log('!')
-        console.log(item)
         let e = item.newModel
         this.saveNodeExtra({id: item.item._cfg.id, extra:e})
         this.command.executeCommand("update", [item]);

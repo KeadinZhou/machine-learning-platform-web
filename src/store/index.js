@@ -133,6 +133,9 @@ export default new Vuex.Store({
       sendData.append('extra', JSON.stringify(old))
       that.$http.put(state.host + `/node/${data.id}`, sendData)
         .then(() => {
+          if (data.showMsg) {
+            that.$message.success('保存成功')
+          }
         })
         .catch((error) => {
           if (error.response) {

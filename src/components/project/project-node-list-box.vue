@@ -21,12 +21,10 @@
 
 <script>
 import eventBus from "@/utils/eventBus";
-// eslint-disable-next-line no-unused-vars
 import okSvg from "@/assets/icons/ok.svg";
 import inSvg from '@/assets/icons/in.svg'
 import wrongSvg from "@/assets/icons/wrong.svg"
 import {mapMutations, mapState} from "vuex";
-// import bgImg from "@/assets/bg.jpg";
 import LoadingBoxFrame from '@/components/frame/loading-box-frame'
 export default {
   name: "project-node-list-box",
@@ -216,7 +214,8 @@ export default {
           inPoints: item.input_type ? [[0, 0.5]] : [],
           outPoints: [[1, 0.5]],
           description: item.description,
-          node_type: item.type
+          node_type: item.type,
+          params: item.params
         }
         that.list.push(itemBuild)
         this.saveNodeType(itemBuild)
@@ -278,9 +277,12 @@ export default {
         data.y = node.extra.y ? node.extra.y : 0;
         data.size = "170*34".split("*");
         data.type = "node";
-
+        if (Object.keys(node.extra).length >= that.nodeType.get(node.node_type).params.length + 2) {
+          data.stateImage = okSvg
+        }
         data.id = node.id
         that.command.executeCommand("add", [data]);
+        that.saveNodeData(data)
         that.saveNodeExtra({id:node.id, extra:node.extra})
       }
     }
