@@ -161,7 +161,7 @@ export default {
         data.y = xy.y;
         data.size = item.size.split("*");
         data.type = "node";
-        that.newNodeSubmit(item.nodeType)
+        that.newNodeSubmit(item.node_type)
         .then(result => {
           data.id = result.id
           that.command.executeCommand("add", [data]);
