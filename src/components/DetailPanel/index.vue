@@ -71,6 +71,8 @@ export default {
             self.status = "node-selected";
             self.item = item.target;
             self.node = item.target.getModel();
+            console.log(self.item)
+            console.log(self.node)
           } else {
             self.status = "canvas-selected";
             self.item = null;

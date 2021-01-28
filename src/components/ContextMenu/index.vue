@@ -27,9 +27,11 @@ export default {
     bindEvent() {
       eventBus.$on("contextmenuClick", e => {
         const menu = this.$refs.contextMenu;
-        menu.style.left = e.clientX + "px";
-        menu.style.top = e.clientY + "px";
+        menu.style.left = e.clientX - 250 + "px";
+        menu.style.top = e.clientY - 65 + "px";
         menu.style.display = "block";
+        console.log(e.item)
+        console.log(e.item.getModel())
       });
        eventBus.$on("mousedown", () => {
         const menu = this.$refs.contextMenu;

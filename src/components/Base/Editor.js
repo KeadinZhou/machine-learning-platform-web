@@ -5,7 +5,7 @@ export default class Editor {
   constructor() {
     this.id = uniqueId();
   }
-  getGrpah() {
+  getGraph() {
     return this.graph
   }
   emit(event, params) {

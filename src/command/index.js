@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import { uniqueId } from '@/utils'
 class command {
     editor = null;
@@ -7,11 +8,13 @@ class command {
         this.editor = editor;
     }
     executeCommand(key, datas) {
+      console.log(key)
+      console.log(datas)
         const list = []
         datas.map(data => {
             let model = data
             if (key === 'add') {
-                model.id = data.type + uniqueId()
+                // model.id = data.type + uniqueId()
             }
             if (key === 'delete') {
                 if (data.getType() === 'node') {

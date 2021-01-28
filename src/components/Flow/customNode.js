@@ -44,7 +44,7 @@ const customNode = {
           attrs: {
             x: offsetX + 16,
             y: offsetY + 8,
-            width: 20,
+            width: 16,
             height: 16,
             img: cfg.image,
             parent: mainId

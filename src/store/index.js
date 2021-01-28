@@ -36,7 +36,10 @@ export default new Vuex.Store({
         crc = ( crc >>> 8 ) ^ x;
       }
       return (Math.abs(crc ^ (-1))).toString(16);
-    }
+    },
+    nodeMap: new Map(),
+    nodeType: new Map(),
+    nodeExtra: new Map()
   },
   mutations: {
     updateCurrentPage(state, data) {
@@ -110,6 +113,53 @@ export default new Vuex.Store({
         .finally(() => {
         })
     },
+    saveNodeData(state, data) {
+      state.nodeMap.set(data.id, data)
+    },
+    saveNodeType(state, data) {
+      state.nodeType.set(data.node_type, data)
+    },
+    saveNodeExtra(state, data) {
+      let old = state.nodeExtra.get(data.id)
+      if (!old) {
+        old = {}
+      }
+      for (let item in data.extra) {
+        old[item] = data.extra[item]
+      }
+      state.nodeExtra.set(data.id, old)
+      let that = this._vm
+      let sendData = new FormData()
+      sendData.append('extra', JSON.stringify(old))
+      that.$http.put(state.host + `/node/${data.id}`, sendData)
+        .then(() => {
+        })
+        .catch((error) => {
+          if (error.response) {
+            that.$message.error(error.response.data.message)
+          } else {
+            that.$message.error('请求失败')
+          }
+        })
+        .finally(() => {
+        })
+    },
+    deleteNodeInServer(state, node_id) {
+      let that = this._vm
+      that.$http.delete(state.host + `/node/${node_id}`)
+        .then(() => {
+          that.$message.success('删除成功')
+        })
+        .catch((error) => {
+          if (error.response) {
+            that.$message.error(error.response.data.message)
+          } else {
+            that.$message.error('请求失败')
+          }
+        })
+        .finally(() => {
+        })
+    }
   },
   actions: {
   },

@@ -5,19 +5,19 @@
       type="text/css"
       href="//at.alicdn.com/t/font_598462_3xve1872wizzolxr.css"
     />
-    <i
-      class="command iconfont icon-undo"
-      title="撤销"
-      :class="undoList.length>0?'':'disable'"
-      @click="handleUndo"
-    ></i>
-    <i
-      class="command iconfont icon-redo"
-      title="重做"
-      :class="redoList.length>0?'':'disable'"
-      @click="handleRedo"
-    ></i>
-    <span class="separator"></span>
+<!--    <i-->
+<!--      class="command iconfont icon-undo"-->
+<!--      title="撤销"-->
+<!--      :class="undoList.length>0?'':'disable'"-->
+<!--      @click="handleUndo"-->
+<!--    ></i>-->
+<!--    <i-->
+<!--      class="command iconfont icon-redo"-->
+<!--      title="重做"-->
+<!--      :class="redoList.length>0?'':'disable'"-->
+<!--      @click="handleRedo"-->
+<!--    ></i>-->
+<!--    <span class="separator"></span>-->
     <!-- <i data-command="copy" class="command iconfont icon-copy-o disable" title="复制"></i>
     <i data-command="paste" class="command iconfont icon-paster-o disable" title="粘贴"></i>-->
     <i
@@ -92,6 +92,7 @@
 import eventBus from "@/utils/eventBus";
 import Util from "@antv/g6/src/util";
 import { uniqueId, getBox } from "@/utils";
+import {mapMutations} from "vuex";
 export default {
   data() {
     return {
@@ -120,6 +121,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['deleteNodeInServer', 'saveNodeExtra']),
     init() {
       const { editor, command } = this.$parent;
       this.editor = editor;
@@ -144,6 +146,10 @@ export default {
         this.undoList = data.undoList;
       });
       eventBus.$on("updateItem", item => {
+        console.log('!')
+        console.log(item)
+        let e = item.newModel
+        this.saveNodeExtra({id: item.item._cfg.id, extra:e})
         this.command.executeCommand("update", [item]);
       });
       eventBus.$on("addItem", item => {
@@ -171,6 +177,9 @@ export default {
     },
     handleDelete() {
       if (this.selectedItem.length > 0) {
+        for (let item of this.selectedItem) {
+          this.deleteNodeInServer(item._cfg.id)
+        }
         this.command.executeCommand("delete", this.selectedItem);
         this.selectedItem = null;
       }
