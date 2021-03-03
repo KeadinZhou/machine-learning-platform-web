@@ -39,7 +39,8 @@ export default new Vuex.Store({
     },
     nodeMap: new Map(),
     nodeType: new Map(),
-    nodeExtra: new Map()
+    nodeExtra: new Map(),
+    dataForFrame: {},
   },
   mutations: {
     updateCurrentPage(state, data) {
@@ -115,9 +116,10 @@ export default new Vuex.Store({
     },
     saveNodeData(state, data) {
       state.nodeMap.set(data.id, data)
+      state.nodeExtra.set(data.id, data.extra)
     },
     saveNodeType(state, data) {
-      state.nodeType.set(data.node_type, data)
+      state.nodeType.set(data.type, data)
     },
     saveNodeExtra(state, data) {
       let old = state.nodeExtra.get(data.id)
@@ -162,6 +164,70 @@ export default new Vuex.Store({
         })
         .finally(() => {
         })
+    },
+    deleteEdgeInServer(state, data) {
+      let that = this._vm
+      that.$http.delete(state.host + `/node/edge` + state.buildGetQuery(data))
+        .then(() => {
+          that.$message.success('删除成功')
+        })
+        .catch((error) => {
+          if (error.response) {
+            that.$message.error(error.response.data.message)
+          } else {
+            that.$message.error('请求失败')
+          }
+        })
+        .finally(() => {
+        })
+    },
+    newEdgeInServer(state, data) {
+      let that = this._vm
+      let sendData = new FormData()
+      sendData.append('project_id', data.project_id)
+      sendData.append('node1_id ', data.node1_id )
+      sendData.append('node2_id ', data.node2_id )
+      that.$http.post(state.host + `/node/edge` + state.buildGetQuery(data))
+        .then(() => {
+          // that.$message.success('连接成功')
+        })
+        .catch((error) => {
+          if (error.response) {
+            that.$message.error(error.response.data.message)
+          } else {
+            that.$message.error('请求失败')
+          }
+        })
+        .finally(() => {
+        })
+    },
+    buildDataForFrame(state, data) {
+      if (data === undefined || data === null) {
+        state.dataForFrame = {}
+      } else {
+        let dataForFrame = {
+          name: '',
+          nodeList: [],
+          lineList: []
+        }
+        for (let item of data) {
+          dataForFrame.nodeList.push({
+            id: String(item.id),
+            name: state.nodeType.get(item.node_type).name,
+            type: item.node_type,
+            left: item.extra.x + 'px',
+            top: item.extra.y + 'px',
+            ico: state.nodeType.get(item.node_type).icon ? state.nodeType.get(item.node_type).icon : 'el-icon-question',
+          })
+          for (let outer of item.out_edges) {
+            dataForFrame.lineList.push({
+              from: String(item.id),
+              to: String(outer)
+            })
+          }
+        }
+        state.dataForFrame = dataForFrame
+      }
     }
   },
   actions: {

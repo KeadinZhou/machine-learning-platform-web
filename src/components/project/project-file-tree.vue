@@ -311,11 +311,12 @@ export default {
 .project-file-tree-box{
   width: 100%;
   height: 100%;
-  box-shadow: 0 1px 10px rgba(0,21,41,.21);
-  position: absolute;
-  z-index: 98;
-  left: 0;
-  bottom: 0;
+  /*box-shadow: 0 1px 10px rgba(0,21,41,.21);*/
+  /*position: absolute;*/
+  /*z-index: 98;*/
+  /*left: 0;*/
+  /*bottom: 0;*/
+  border-right: 1px solid #dce3e8;
 }
 .project-file-tree-box-title{
   background: #DADADA;
