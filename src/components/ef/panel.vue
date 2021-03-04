@@ -106,7 +106,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['dataForFrame', 'nodeMap', 'host'])
+    ...mapState(['dataForFrame', 'nodeMap', 'host']),
+    activeElementComputed() {
+      return JSON.parse(JSON.stringify(this.activeElement))
+    }
   },
   // 一些基础配置移动该文件中
   mixins: [easyFlowMixin],
@@ -316,7 +319,7 @@ export default {
       } else if (this.activeElement.type === 'line') {
         this.$confirm({
           title: '提示',
-          content: '确定删除所点击的线吗?',
+          content: '确定删除选中的线吗?',
           okText: '确定',
           okType: 'danger',
           cancelText: '取消',
@@ -539,6 +542,47 @@ export default {
       this.$refs.efContainer.style.transform = `scale(${this.zoom})`
       this.jsPlumb.setZoom(this.zoom)
     },
+    lineLabelChange(sourceId, targetId, label) {
+      let that = this
+      let conn = that.jsPlumb.getConnections({
+        source: sourceId,
+        target: targetId
+      })[0]
+      that.jsPlumb.deleteConnection(conn)
+      let connParam = {
+        source: sourceId,
+        target: targetId,
+        label: label,
+        connector: '',
+        anchors: undefined,
+        paintStyle: undefined,
+      }
+      this.jsPlumb.connect(connParam, this.jsplumbConnectOptions)
+    }
+  },
+  watch: {
+    activeElementComputed: {
+      handler(new_value,old_value){
+        if (old_value.type === 'line') {
+          this.data.lineList.filter((line) => {
+            if (line.from === old_value.sourceId && line.to === old_value.targetId) {
+              this.lineLabelChange(line.from, line.to, '')
+            }
+          })
+        }
+
+
+        if (new_value.type === 'line') {
+          this.data.lineList.filter((line) => {
+            if (line.from === new_value.sourceId && line.to === new_value.targetId) {
+              this.lineLabelChange(line.from, line.to, '选中')
+            }
+          })
+        }
+        console.log(new_value,old_value)
+      },
+      deep: true
+    }
   }
 }
 </script>
