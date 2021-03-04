@@ -115,6 +115,9 @@ export default new Vuex.Store({
         })
     },
     saveNodeData(state, data) {
+      if (typeof data.id !== "string") {
+        data.id = String(data.id)
+      }
       state.nodeMap.set(data.id, data)
       state.nodeExtra.set(data.id, data.extra)
     },
@@ -122,7 +125,10 @@ export default new Vuex.Store({
       state.nodeType.set(data.type, data)
     },
     saveNodeExtra(state, data) {
-      let old = state.nodeExtra.get(data.id)
+      if (typeof data.id !== "string") {
+        data.id = String(data.id)
+      }
+      let old = state.nodeExtra.get(String(data.id))
       if (!old) {
         old = {}
       }

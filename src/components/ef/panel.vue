@@ -263,7 +263,7 @@ export default {
             containment: 'parent',
             stop: function (el) {
               // 拖拽节点结束后的对调
-              let Node = that.nodeMap.get(Number(node.id))
+              let Node = that.nodeMap.get(String(node.id))
               Node.extra.x = el.finalPos[0]
               Node.extra.y = el.finalPos[1]
               that.saveNodeExtra(Node)
@@ -431,7 +431,7 @@ export default {
               that.jsPlumb.draggable(nodeId, {
                 containment: 'parent',
                 stop: function (el) {
-                  let Node = that.nodeMap.get(Number(node.id))
+                  let Node = that.nodeMap.get(String(node.id))
                   Node.extra.x = el.finalPos[0]
                   Node.extra.y = el.finalPos[1]
                   that.saveNodeExtra(Node)
@@ -542,7 +542,7 @@ export default {
       this.$refs.efContainer.style.transform = `scale(${this.zoom})`
       this.jsPlumb.setZoom(this.zoom)
     },
-    lineLabelChange(sourceId, targetId, label) {
+    updateLine(sourceId, targetId, data) {
       let that = this
       let conn = that.jsPlumb.getConnections({
         source: sourceId,
@@ -552,10 +552,10 @@ export default {
       let connParam = {
         source: sourceId,
         target: targetId,
-        label: label,
-        connector: '',
-        anchors: undefined,
-        paintStyle: undefined,
+        label: data.label ? data.label : '',
+        connector: data.connector ? data.connector : '',
+        anchors: data.anchors ? data.anchors : undefined,
+        paintStyle: data.paintStyle ? data.paintStyle : undefined,
       }
       this.jsPlumb.connect(connParam, this.jsplumbConnectOptions)
     }
@@ -566,7 +566,7 @@ export default {
         if (old_value.type === 'line') {
           this.data.lineList.filter((line) => {
             if (line.from === old_value.sourceId && line.to === old_value.targetId) {
-              this.lineLabelChange(line.from, line.to, '')
+              this.updateLine(line.from, line.to, {})
             }
           })
         }
@@ -575,7 +575,9 @@ export default {
         if (new_value.type === 'line') {
           this.data.lineList.filter((line) => {
             if (line.from === new_value.sourceId && line.to === new_value.targetId) {
-              this.lineLabelChange(line.from, line.to, '选中')
+              this.updateLine(line.from, line.to, {
+                paintStyle: {strokeWidth: 3, stroke: '#1879FF'}
+              })
             }
           })
         }

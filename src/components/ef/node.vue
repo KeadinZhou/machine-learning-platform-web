@@ -24,18 +24,59 @@
         <i class="el-icon-warning-outline el-node-state-warning" v-show="node.state === 'warning'"></i>
         <i class="el-icon-loading el-node-state-running" v-show="node.state === 'running'"></i>
       </div>
+      <a-modal v-model="modalVisible" title="参数设置" :maskClosable="false" okText="保存" cancelText="取消" @ok="setParamsSubmitCheck" :confirm-loading="submitting">
+        <template>
+          <dynamic-form :params-config="paramsConfig" v-model="paramsData"></dynamic-form>
+        </template>
+      </a-modal>
+      <a-modal v-model="nodeLogVisible" title="运行日志" :maskClosable="false" okText="确定" cancelText="取消" @ok="nodeLogVisible = false" width="1000px">
+        <a-descriptions bordered>
+          <a-descriptions-item label="运行状态" :span="3">
+            <b v-if="nodeLogData.status === 0"><span style="color: #88898A">未运行</span></b>
+            <b v-if="nodeLogData.status === 1"><span style="color: peru">正在运行</span></b>
+            <b v-if="nodeLogData.status === 2"><span style="color: rgb(82,196,26)">运行完成</span></b>
+            <b v-if="nodeLogData.status === 3"><span style="color: red">运行失败</span></b>
+          </a-descriptions-item>
+          <a-descriptions-item label="运行参数" :span="3">
+            <pre>{{nodeLogData.extra}}</pre>
+          </a-descriptions-item>
+          <a-descriptions-item label="运行日志" :span="3">
+            <pre style="width: 100%; background: black; color: white; min-height: 100px">{{nodeLogData.log?nodeLogData.log:'(empty)'}}</pre>
+          </a-descriptions-item>
+        </a-descriptions>
+      </a-modal>
+      <a-modal v-model="csvVisible" title="查看文件" :maskClosable="false" okText="确定" cancelText="取消" @ok="csvVisible = false" width="98%">
+        选择要查看的文件：
+        <el-select v-model="filenameChoose" placeholder="请选择" size="medium" @change="getFile">
+          <el-option
+              v-for="(item, index) in filenameList"
+              :key="''+item+index"
+              :label="item"
+              :value="item">
+          </el-option>
+        </el-select>
+        <br>
+        <br>
+        <loading-box-frame v-if="fileLoading"></loading-box-frame>
+        <div v-else :style="`max-height: ${height - 350}px;overflow: auto;`">
+          <csv-show-table :value="csvData"></csv-show-table>
+        </div>
+      </a-modal>
     </div>
     <a-menu slot="overlay">
-      <a-menu-item key="1">
+      <a-menu-item key="1" @click="setParamsClick">
         设置参数
       </a-menu-item>
-      <a-menu-item key="2">
+      <a-menu-item key="2" @click="runNodeClick">
         运行节点
       </a-menu-item>
-      <a-menu-item key="3">
+      <a-menu-item key="3" @click="showNodeLog">
+        查看日志
+      </a-menu-item>
+      <a-menu-item key="4" @click="showFileClick">
         读取结果
       </a-menu-item>
-      <a-menu-item key="4" @click="deleteNode">
+      <a-menu-item key="5" @click="deleteNode">
         <span style="color: red">删除节点</span>
       </a-menu-item>
     </a-menu>
@@ -43,15 +84,39 @@
 </template>
 
 <script>
+import LoadingBoxFrame from '@/components/frame/loading-box-frame'
+import CSVShowTable from '@/components/project/csv-show-table'
+import DynamicForm from '@/components/project/dynamic-form'
+import {mapMutations, mapState} from "vuex";
 export default {
   props: {
     node: Object,
     activeElement: Object
   },
+  components: {
+    'loading-box-frame': LoadingBoxFrame,
+    'csv-show-table': CSVShowTable,
+    'dynamic-form': DynamicForm
+  },
   data() {
-    return {}
+    return {
+      height: window.innerHeight,
+      modalVisible: false,
+      submitting: false,
+      clickedTarget: null,
+      paramsConfig: [],
+      paramsData: {},
+      nodeLogVisible: false,
+      nodeLogData: {},
+      csvVisible: false,
+      csvData: [],
+      fileLoading: false,
+      filenameList: [],
+      filenameChoose: ''
+    }
   },
   computed: {
+    ...mapState(['nodeMap', 'nodeType', 'nodeExtra', 'host', 'buildGetQuery']),
     nodeContainerClass() {
       return {
         'ef-node-container': true,
@@ -74,6 +139,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['saveNodeExtra']),
     // 点击节点
     clickNode() {
       this.$emit('clickNode', this.node.id)
@@ -92,7 +158,130 @@ export default {
     },
     deleteNode() {
       this.$emit('deleteNode', this.node.id)
-    }
-  }
+    },
+    setParamsClick() {
+      let that = this
+      let node = that.node
+      let nodeData = this.nodeMap.get(String(node.id))
+      let nodeParams = this.nodeType.get(node.type).params
+      let nodeExtra = this.nodeExtra.get(String(node.id))
+      console.log(nodeData)
+      console.log(nodeParams)
+      console.log(nodeExtra)
+      this.paramsConfig = nodeParams
+      this.paramsData = {}
+      for(let p of nodeParams) {
+        this.paramsData[p.name] = p.default
+        if (nodeExtra[p.name] !== undefined) {
+          this.paramsData[p.name] = nodeExtra[p.name]
+        }
+      }
+      this.modalVisible = true
+    },
+    setParamsSubmitCheck() {
+      let that = this
+      console.log(that.paramsData)
+      for (let config of this.paramsConfig) {
+        if (config.required && (this.paramsData[config.name] === null || this.paramsData[config.name] === '') ) {
+          this.$message.error(`${config.name} is required`)
+          return
+        }
+      }
+      this.setParamsSubmit()
+    },
+    setParamsSubmit() {
+      this.modalVisible = false
+      this.saveNodeExtra({id: this.node.id, extra: this.paramsData, showMsg: true})
+    },
+    runNodeClick() {
+      let that = this
+      that.$http.post(that.host + `/node/${that.node.id}/run`)
+          .then(() => {
+            that.$message.success('任务创建成功')
+            that.showNodeLog()
+          })
+          .catch((error) => {
+            if (error.response) {
+              that.$message.error(error.response.data.message)
+            } else {
+              that.$message.error('请求失败')
+            }
+          })
+          .finally(() => {
+          })
+    },
+    showNodeLog() {
+      this.getNodeLog()
+      this.nodeLogVisible = true
+    },
+    getNodeLog() {
+      let that = this
+      that.$http.get(that.host + `/node/${that.node.id}`)
+          .then(data => {
+            that.nodeLogData = data.data
+            delete that.nodeLogData.extra.x
+            delete that.nodeLogData.extra.y
+            if (that.nodeLogData.status === 1) {
+              setTimeout(()=>{
+                that.getNodeLog()
+              }, 500)
+            }
+          })
+          .catch((error) => {
+            if (error.response) {
+              that.$message.error(error.response.data.message)
+            } else {
+              that.$message.error('请求失败')
+            }
+          })
+          .finally(() => {
+          })
+    },
+    showFileClick() {
+      let output_type = this.nodeType.get(this.node.type).output_type
+      switch (output_type) {
+        case 0: {
+          this.filenameList = []
+          this.$message.error('该节点无输出')
+          return
+        }
+        case 1: {
+          this.filenameList = ['x.csv', 'y.csv']
+          break
+        }
+        case 2: {
+          this.filenameList = ['x_train.csv','x_test.csv','y_train.csv','y_test.csv']
+          break
+        }
+      }
+      this.filenameChoose = this.filenameList[0]
+      this.csvVisible = true
+      this.getFile(this.filenameChoose)
+    },
+    getFile(filename) {
+      let that = this
+      that.fileLoading = true
+      that.$http.get(that.host + `/node/${that.node.id}/csv` + this.buildGetQuery({filename: filename}))
+          .then(data => {
+            that.csvData = data.data.data.split('\n')
+            console.log(that.csvData)
+            for (let item in that.csvData) {
+              that.csvData[item] = that.csvData[item].split(',')
+            }
+            console.log(that.csvData)
+          })
+          .catch((error) => {
+            that.csvVisible = false
+            if (error.response) {
+              that.$message.error(error.response.data.message)
+            } else {
+              that.$message.error('请求失败')
+            }
+          })
+          .finally(() => {
+            that.fileLoading = false
+          })
+    },
+  },
 }
 </script>
