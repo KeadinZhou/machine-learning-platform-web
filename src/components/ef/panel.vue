@@ -43,15 +43,25 @@
               :disabled="!this.activeElement.type"
           ></i>
           <span class="separator"></span>
+<!--          <i-->
+<!--              class="command el-icon-zoom-in"-->
+<!--              @click="zoomAdd"-->
+<!--              title="放大"-->
+<!--          ></i>-->
+<!--          <i-->
+<!--              class="command el-icon-zoom-out"-->
+<!--              @click="zoomSub"-->
+<!--              title="缩小"-->
+<!--          ></i>-->
           <i
-              class="command el-icon-zoom-in"
-              @click="zoomAdd"
-              title="放大"
+              class="command el-icon-video-play"
+              @click="runProject"
+              title="运行项目"
           ></i>
           <i
-              class="command el-icon-zoom-out"
-              @click="zoomSub"
-              title="缩小"
+              class="command el-icon-download"
+              @click="exportProject"
+              title="导出项目"
           ></i>
         </div>
       </div>
@@ -419,7 +429,8 @@ export default {
               left: left + 'px',
               top: top + 'px',
               ico: nodeMenu.ico,
-              state: 'error'
+              // state: 'error'
+              state: ''
             }
 
             that.saveNodeExtra({id:nodeId, extra:{x:left, y:top}})
@@ -542,6 +553,23 @@ export default {
       this.$refs.efContainer.style.transform = `scale(${this.zoom})`
       this.jsPlumb.setZoom(this.zoom)
     },
+    runProject() {
+      let that = this
+      let projectId = that.$route.params.id
+      that.$http.post(that.host + `/project/${projectId}/run`)
+          .then(data => {
+            this.$message.success(data.data.message)
+          })
+          .catch((error) => {
+            if (error.response) {
+              that.$message.error(error.response.data.message)
+            } else {
+              that.$message.error('请求失败')
+            }
+          })
+          .finally(() => {
+          })
+    },
     updateLine(sourceId, targetId, data) {
       let that = this
       let conn = that.jsPlumb.getConnections({
@@ -558,6 +586,9 @@ export default {
         paintStyle: data.paintStyle ? data.paintStyle : undefined,
       }
       this.jsPlumb.connect(connParam, this.jsplumbConnectOptions)
+    },
+    exportProject() {
+      this.$message.success('导出中……')
     }
   },
   watch: {
