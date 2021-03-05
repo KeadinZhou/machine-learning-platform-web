@@ -55,6 +55,8 @@
               :value="item">
           </el-option>
         </el-select>
+        <el-button v-if="!showSummary" style="margin-left: 10px" @click="getFile(filenameChoose, true)">查看Summary</el-button>
+        <el-button v-else style="margin-left: 10px" @click="getFile(filenameChoose, false)">关闭Summary</el-button>
         <br>
         <br>
         <loading-box-frame v-if="fileLoading"></loading-box-frame>
@@ -112,7 +114,8 @@ export default {
       csvData: [],
       fileLoading: false,
       filenameList: [],
-      filenameChoose: ''
+      filenameChoose: '',
+      showSummary: false
     }
   },
   computed: {
@@ -258,10 +261,21 @@ export default {
       this.csvVisible = true
       this.getFile(this.filenameChoose)
     },
-    getFile(filename) {
+    getFile(filename, showSummary) {
       let that = this
+      if (showSummary) {
+        that.showSummary = true
+      } else {
+        that.showSummary = false
+      }
+
+      let query = {filename: filename}
+      if (showSummary) {
+        query.summary = true
+      }
+
       that.fileLoading = true
-      that.$http.get(that.host + `/node/${that.node.id}/csv` + this.buildGetQuery({filename: filename}))
+      that.$http.get(that.host + `/node/${that.node.id}/csv` + this.buildGetQuery(query))
           .then(data => {
             that.csvData = data.data.data.split('\n')
             console.log(that.csvData)

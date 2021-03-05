@@ -15,12 +15,15 @@
         </el-select>
       </div>
       <div v-if="config.enum.length > 0" class="dynamic-form-item-input">
-        <el-select v-model="nowValue[config.name]" placeholder="请选择" style="width: 100%" size="medium">
+        <el-select v-model="nowValue[config.name]" placeholder="请选择" style="width: 100%" size="medium" popper-class="my-el-select-dropdown">
           <el-option
+              style="width: 100%"
               v-for="(item, index) in config.enum"
               :key="''+item+index"
-              :label="item"
-              :value="item"></el-option>
+              :value="item[0]">
+            <span style="float: left">{{ item[0] }}</span>
+            <span style="float: right; color: #8492a6; font-size: 13px">{{ item[1] }}</span>
+          </el-option>
         </el-select>
       </div>
       <div v-else-if="config.type === 'str' && config.name !== 'code'" class="dynamic-form-item-input">
@@ -28,7 +31,7 @@
         </el-input>
       </div>
       <div v-else-if="config.type === 'str' && config.name === 'code'" class="dynamic-form-item-input">
-        <el-input v-model="nowValue[config.name]" :placeholder="`请输入代码`" type="textarea" style="width: 100%" size="medium" :autosize="{ minRows: 7, maxRows: 15 }">
+        <el-input v-model="nowValue[config.name]" :placeholder="`请输入代码`" type="textarea" style="width: 100%" size="medium" :autosize="{ minRows: 15, maxRows: 20 }">
         </el-input>
       </div>
       <div v-else-if="config.type === 'float'" class="dynamic-form-item-input">
@@ -97,5 +100,11 @@ export default {
 }
 .dynamic-form-item-input{
   margin: 5px 0;
+}
+</style>
+
+<style>
+.my-el-select-dropdown{
+  width: 472px;
 }
 </style>
