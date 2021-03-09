@@ -1,26 +1,34 @@
 <template>
-  <a-card class="login-box" :hoverable="true">
-    <div class="login-title">
-      <h1><b>人工智能可视化建模平台</b></h1>
-      <h2>用户登录</h2>
+  <div>
+    <a-card class="login-box" :hoverable="true">
+      <div class="login-title">
+        <h1><b>人工智能可视化建模平台</b></h1>
+        <h2>用户登录</h2>
+      </div>
+      <div class="login-form-box">
+        <a-form-model :rules="rules" :model="user" ref="loginForm">
+          <a-form-model-item prop="username">
+            <a-input v-model="user.username" placeholder="用户名" size="large">
+              <a-icon slot="prefix" type="user" />
+            </a-input>
+          </a-form-model-item>
+          <a-form-model-item prop="password">
+            <a-input v-model="user.password" placeholder="密码" type="password" size="large" @pressEnter="login">
+              <a-icon slot="prefix" type="lock" />
+            </a-input>
+          </a-form-model-item>
+        </a-form-model>
+        <a-button type="primary" style="width: 100%" @click="login">登录</a-button>
+        <div class="login-reg-switch" @click="$router.push({name: 'register'})">还没账号? 点此注册</div>
+      </div>
+    </a-card>
+    <div>
+      <el-image
+          class="login-page-image"
+          src="login.jpg"
+          fit="contain"></el-image>
     </div>
-    <div class="login-form-box">
-      <a-form-model :rules="rules" :model="user" ref="loginForm">
-        <a-form-model-item prop="username">
-          <a-input v-model="user.username" placeholder="用户名" size="large">
-            <a-icon slot="prefix" type="user" />
-          </a-input>
-        </a-form-model-item>
-        <a-form-model-item prop="password">
-          <a-input v-model="user.password" placeholder="密码" type="password" size="large" @pressEnter="login">
-            <a-icon slot="prefix" type="lock" />
-          </a-input>
-        </a-form-model-item>
-      </a-form-model>
-      <a-button type="primary" style="width: 100%" @click="login">登录</a-button>
-      <div class="login-reg-switch" @click="$router.push({name: 'register'})">还没账号? 点此注册</div>
-    </div>
-  </a-card>
+  </div>
 </template>
 
 <script>
@@ -60,9 +68,11 @@ export default {
 .login-box{
   width: 400px;
   position: fixed;
+  z-index: 1;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-130%, -50%);
+  background-color: rgba(255,255,255,.8);
 }
 .login-title{
   width: 100%;
@@ -83,5 +93,13 @@ export default {
 }
 .login-reg-switch:hover{
   text-decoration:underline;
+}
+.login-page-image{
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 0;
 }
 </style>

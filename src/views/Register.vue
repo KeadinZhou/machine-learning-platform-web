@@ -1,31 +1,39 @@
 <template>
-  <a-card class="register-box" :hoverable="true">
-    <div class="register-title">
-      <h1><b>人工智能可视化建模平台</b></h1>
-      <h2>用户注册</h2>
+  <div>
+    <a-card class="register-box" :hoverable="true">
+      <div class="register-title">
+        <h1><b>人工智能可视化建模平台</b></h1>
+        <h2>用户注册</h2>
+      </div>
+      <div class="register-form-box">
+        <a-form-model :rules="rules" :model="user" ref="registerForm">
+          <a-form-model-item prop="username">
+            <a-input v-model="user.username" placeholder="用户名" size="large">
+              <a-icon slot="prefix" type="user" />
+            </a-input>
+          </a-form-model-item>
+          <a-form-model-item prop="password">
+            <a-input v-model="user.password" placeholder="密码" type="password" size="large" @pressEnter="register">
+              <a-icon slot="prefix" type="lock" />
+            </a-input>
+          </a-form-model-item>
+          <a-form-model-item prop="password2">
+            <a-input v-model="user.password2" placeholder="再次确认密码" type="password" size="large" @pressEnter="register">
+              <a-icon slot="prefix" type="lock" />
+            </a-input>
+          </a-form-model-item>
+        </a-form-model>
+        <a-button type="primary" style="width: 100%" @click="register">注册</a-button>
+        <div class="register-reg-switch" @click="$router.push({name: 'login'})">已有账号? 点此登录</div>
+      </div>
+    </a-card>
+    <div>
+      <el-image
+          class="login-page-image"
+          src="login.jpg"
+          fit="contain"></el-image>
     </div>
-    <div class="register-form-box">
-      <a-form-model :rules="rules" :model="user" ref="registerForm">
-        <a-form-model-item prop="username">
-          <a-input v-model="user.username" placeholder="用户名" size="large">
-            <a-icon slot="prefix" type="user" />
-          </a-input>
-        </a-form-model-item>
-        <a-form-model-item prop="password">
-          <a-input v-model="user.password" placeholder="密码" type="password" size="large" @pressEnter="register">
-            <a-icon slot="prefix" type="lock" />
-          </a-input>
-        </a-form-model-item>
-        <a-form-model-item prop="password2">
-          <a-input v-model="user.password2" placeholder="再次确认密码" type="password" size="large" @pressEnter="register">
-            <a-icon slot="prefix" type="lock" />
-          </a-input>
-        </a-form-model-item>
-      </a-form-model>
-      <a-button type="primary" style="width: 100%" @click="register">注册</a-button>
-      <div class="register-reg-switch" @click="$router.push({name: 'login'})">已有账号? 点此登录</div>
-    </div>
-  </a-card>
+  </div>
 </template>
 
 <script>
@@ -96,7 +104,9 @@ export default {
   position: fixed;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-130%, -50%);
+  z-index: 1;
+  background-color: rgba(255,255,255,.8);
 }
 .register-title{
   width: 100%;
@@ -117,5 +127,13 @@ export default {
 }
 .register-reg-switch:hover{
   text-decoration:underline;
+}
+.login-page-image{
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 0;
 }
 </style>
