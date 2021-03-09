@@ -7,6 +7,7 @@ import store from './store'
 import axios from 'axios'
 import 'ant-design-vue/dist/antd.css'
 import '@/components/ef/index.css'
+import moment from 'moment'
 import App from './App.vue'
 
 Vue.config.productionTip = false
@@ -16,6 +17,7 @@ Vue.use(Antd)
 
 axios.defaults.withCredentials = true
 Vue.prototype.$http = axios
+Vue.prototype.$moment = moment
 
 new Vue({
   router,

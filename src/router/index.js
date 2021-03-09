@@ -29,6 +29,11 @@ const routes = [
     name: 'project_open',
     component: () => import('@/views/Project')
   },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: () => import('@/views/Admin')
+  },
 ]
 
 const router = new VueRouter({

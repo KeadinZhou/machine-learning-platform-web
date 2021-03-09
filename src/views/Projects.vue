@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import {mapState} from "vuex"
+import {mapMutations, mapState} from "vuex"
 import ProjectListItem from '@/components/projects/project-list-item'
 import LoadingBoxFrame from '@/components/frame/loading-box-frame'
 
@@ -32,6 +32,7 @@ export default {
     ...mapState(['user', 'host', 'buildGetQuery'])
   },
   methods: {
+    ...mapMutations(['updateCurrentPage']),
     getData() {
       let that = this
       if (!that.user) {
@@ -60,7 +61,7 @@ export default {
     }
   },
   created() {
-    this.$store.commit('updateCurrentPage', {
+    this.updateCurrentPage({
       page: 'project',
       icon: 'folder-open',
       title: '项目列表'

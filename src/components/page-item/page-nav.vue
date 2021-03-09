@@ -1,7 +1,7 @@
 <template>
   <div class="page-nav" v-if="current_page.page !== 'login' && current_page.page !== 'register'">
     <div class="page-nav-title-icon">
-      <div class="page-nav-icon">
+      <div class="page-nav-icon" title="点击返回项目首页" @click="$router.push({name: 'project'})">
         <a-icon :type="current_page.icon" />
       </div>
       <div class="page-nav-title">
@@ -15,7 +15,7 @@
         </a>
         <a-menu slot="overlay">
           <a-menu-item key="1">修改密码</a-menu-item>
-          <a-menu-item key="2" v-if="user.permission === 1">用户管理</a-menu-item>
+          <a-menu-item key="2" v-if="user.permission === 1" @click="$router.push({name:'admin'})">用户管理</a-menu-item>
           <a-menu-item key="3" @click="logout">退出登录</a-menu-item>
         </a-menu>
       </a-dropdown>
@@ -59,6 +59,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
   }
   .page-nav-user-box{
     height: 65px;

@@ -64,6 +64,11 @@
           <csv-show-table :value="csvData"></csv-show-table>
         </div>
       </a-modal>
+
+      <a-modal v-model="consoleVisible" title="Console" :maskClosable="false" okText="确定" cancelText="取消" @ok="consoleVisible = false" width="50%">
+        <base-console :content="consoleContent" style="height: calc(100vh - 400px)"></base-console>
+      </a-modal>
+
     </div>
     <a-menu slot="overlay">
       <a-menu-item key="1" @click="setParamsClick">
@@ -88,7 +93,8 @@
 <script>
 import LoadingBoxFrame from '@/components/frame/loading-box-frame'
 import CSVShowTable from '@/components/project/csv-show-table'
-import DynamicForm from '@/components/project/dynamic-form'
+import DynamicForm from '@/components/frame/dynamic-form'
+import BaseConsole from '@/components/frame/base-console'
 import {mapMutations, mapState} from "vuex";
 export default {
   props: {
@@ -98,7 +104,8 @@ export default {
   components: {
     'loading-box-frame': LoadingBoxFrame,
     'csv-show-table': CSVShowTable,
-    'dynamic-form': DynamicForm
+    'dynamic-form': DynamicForm,
+    'base-console': BaseConsole
   },
   data() {
     return {
@@ -115,7 +122,9 @@ export default {
       fileLoading: false,
       filenameList: [],
       filenameChoose: '',
-      showSummary: false
+      showSummary: false,
+      consoleVisible: false,
+      consoleContent: ''
     }
   },
   computed: {
@@ -206,6 +215,8 @@ export default {
           .catch((error) => {
             if (error.response) {
               that.$message.error(error.response.data.message)
+              that.consoleContent = that.$moment().format() + ': ' + error.response.data.message
+              that.consoleVisible = true
             } else {
               that.$message.error('请求失败')
             }
