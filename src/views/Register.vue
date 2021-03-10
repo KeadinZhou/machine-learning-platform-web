@@ -8,7 +8,7 @@
       <div class="register-form-box">
         <a-form-model :rules="rules" :model="user" ref="registerForm">
           <a-form-model-item prop="username">
-            <a-input v-model="user.username" placeholder="用户名" size="large">
+            <a-input v-model="user.username" placeholder="用户名" size="large" @pressEnter="register">
               <a-icon slot="prefix" type="user" />
             </a-input>
           </a-form-model-item>
@@ -20,6 +20,19 @@
           <a-form-model-item prop="password2">
             <a-input v-model="user.password2" placeholder="再次确认密码" type="password" size="large" @pressEnter="register">
               <a-icon slot="prefix" type="lock" />
+            </a-input>
+          </a-form-model-item>
+          <a-form-model-item prop="organization">
+            <a-input v-model="user.organization" placeholder="组织名称" size="large" @pressEnter="register">
+              <a-icon slot="prefix" type="home" />
+            </a-input>
+          </a-form-model-item>
+          <a-form-model-item prop="captcha">
+            <a-input v-model="user.captcha" placeholder="验证码" size="large" @pressEnter="register">
+              <a-icon slot="prefix" type="safety-certificate" />
+              <a-tooltip slot="suffix" title="看不清?点击更换图片">
+                <img height="34px" :src="captchaUrl" alt="看不清？点击更换图片" @click="captchaUrl = $store.state.host + '/captcha?k=' + Math.random()">
+              </a-tooltip>
             </a-input>
           </a-form-model-item>
         </a-form-model>
@@ -41,15 +54,20 @@ export default {
   name: "Register",
   data() {
     return {
+      captchaUrl: this.$store.state.host + '/captcha?k=' + Math.random(),
       user: {
         username: '',
         password: '',
-        password2: ''
+        password2: '',
+        captcha: '',
+        organization: ''
       },
       rules: {
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' },],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' },],
         password2: [{ required: true, message: '请再次输入密码', trigger: 'blur' }, { validator: this.password2check, trigger: 'change' }],
+        captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' },],
+        organization : [{ required: true, message: '请输入组织名称', trigger: 'blur' },],
       }
     }
   },
@@ -74,6 +92,8 @@ export default {
       let sendData = new FormData()
       sendData.append('username', that.user.username)
       sendData.append('password', that.user.password)
+      sendData.append('captcha', that.user.captcha)
+      sendData.append('organization ', that.user.organization)
       that.$http.post(this.$store.state.host + '/user', sendData)
           .then(() => {
             that.$message.success('注册成功')
@@ -81,7 +101,8 @@ export default {
           })
           .catch((error) => {
             if (error.response) {
-              that.$message.error(error.response.data.message)
+              console.log(error.response.data.message)
+              that.$message.error(JSON.stringify(error.response.data.message))
             } else {
               that.$message.error('请求失败')
             }

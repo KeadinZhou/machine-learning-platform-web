@@ -8,13 +8,21 @@
       <div class="login-form-box">
         <a-form-model :rules="rules" :model="user" ref="loginForm">
           <a-form-model-item prop="username">
-            <a-input v-model="user.username" placeholder="用户名" size="large">
+            <a-input v-model="user.username" placeholder="用户名" size="large" @pressEnter="login">
               <a-icon slot="prefix" type="user" />
             </a-input>
           </a-form-model-item>
           <a-form-model-item prop="password">
             <a-input v-model="user.password" placeholder="密码" type="password" size="large" @pressEnter="login">
               <a-icon slot="prefix" type="lock" />
+            </a-input>
+          </a-form-model-item>
+          <a-form-model-item prop="captcha">
+            <a-input v-model="user.captcha" placeholder="验证码" size="large" @pressEnter="login">
+              <a-icon slot="prefix" type="safety-certificate" />
+              <a-tooltip slot="suffix" title="看不清?点击更换图片">
+                <img height="34px" :src="captchaUrl" alt="看不清？点击更换图片" @click="captchaUrl = $store.state.host + '/captcha?k=' + Math.random()">
+              </a-tooltip>
             </a-input>
           </a-form-model-item>
         </a-form-model>
@@ -36,13 +44,16 @@ export default {
   name: "Login",
   data() {
     return {
+      captchaUrl: this.$store.state.host + '/captcha?k=' + Math.random(),
       user: {
         username: '',
-        password: ''
+        password: '',
+        captcha: ''
       },
       rules: {
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' },],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' },],
+        captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' },],
       }
     }
   },

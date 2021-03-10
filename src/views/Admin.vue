@@ -18,11 +18,20 @@
           禁用
         </a-tag>
       </span>
+      <span slot="block" slot-scope="block">
+        <a-tag color="#87d068" v-if="block === 0">
+          正常
+        </a-tag>
+        <a-tag color="#f50" v-else>
+          禁用
+        </a-tag>
+      </span>
       <span slot="action" slot-scope="record">
         <a-space>
-          <a-button @click="$message.info(record.username)" type="primary">查看用户</a-button>
-          <a-button @click="$message.info(record.username)" >修改密码</a-button>
-          <a-button @click="$message.info(record.username)" type="danger">禁用用户</a-button>
+          <a-button type="primary" @click="$router.push({name: 'project', query: {user: record.id}})">查看项目</a-button>
+<!--          <a-button @click="$message.info(record.username)" >修改密码</a-button>-->
+          <a-button type="danger" @click="updateUser(record.id, {block: 1})" v-if="record.block === 0">禁用用户</a-button>
+          <a-button @click="updateUser(record.id, {block: 0})" v-else>解除禁用</a-button>
         </a-space>
       </span>
     </a-table>
@@ -57,6 +66,14 @@ const columns = [
     dataIndex: 'permission',
     key: 'permission',
     scopedSlots: { customRender: 'permission' },
+    width: '150px',
+    align: 'center'
+  },
+  {
+    title: '状态',
+    dataIndex: 'block',
+    key: 'block',
+    scopedSlots: { customRender: 'block' },
     width: '150px',
     align: 'center'
   },
@@ -103,7 +120,7 @@ export default {
       that.page = page
       let query = that.buildGetQuery({
         page: page,
-        pageSize: pageSize
+        page_size: pageSize
       })
       that.loading = true
       that.$http.get(that.host + '/user' + query)
@@ -112,6 +129,30 @@ export default {
             that.userData = Data.data
             that.page = Data.meta.page
             that.count = Data.meta.count
+          })
+          .catch((error) => {
+            if (error.response) {
+              that.$message.error(error.response.data.message)
+            } else {
+              that.$message.error('请求失败')
+            }
+          })
+          .finally(() => {
+            that.loading = false
+          })
+    },
+    updateUser(user_id, updateData) {
+      let that = this
+
+      let sendData = new FormData()
+      for (let name in updateData) {
+        sendData.append(name,  updateData[name])
+      }
+
+      that.$http.put(that.host + '/user/' + user_id, sendData)
+          .then(data => {
+            that.$message.success(data.data.message)
+            this.getData()
           })
           .catch((error) => {
             if (error.response) {

@@ -1,11 +1,12 @@
 <template>
   <div class="project-main-box">
     <div class="project-title">
-      选择你要编辑的项目
+      <span v-if="!otherUser">选择你要编辑的项目</span>
+      <span v-else>选择你要查看的 <b>{{otherUsername}}</b> 的项目</span>
     </div>
     <loading-box-frame v-if="loading"></loading-box-frame>
     <div class="project-item-box" v-else>
-      <project-list-item add @toUpdate="getData"></project-list-item>
+      <project-list-item add @toUpdate="getData" v-if="!otherUser"></project-list-item>
       <project-list-item v-for="(item,index) in projects" :key="item.name + index" :project="item" @toUpdate="getData"></project-list-item>
     </div>
   </div>
@@ -26,6 +27,8 @@ export default {
     return {
       loading: true,
       projects: [],
+      otherUser: undefined,
+      otherUsername: undefined
     }
   },
   computed: {
@@ -43,6 +46,14 @@ export default {
       }
       that.loading = true
       let user_id = that.user.id
+      that.otherUsername = undefined
+      if (that.$route.query.user) {
+        user_id = that.$route.query.user
+        that.otherUser = user_id
+        that.getOtherUsername()
+      } else {
+        that.otherUser = undefined
+      }
       let query = that.buildGetQuery({user_id: user_id})
       that.$http.get(that.host + '/project' + query)
           .then(data => {
@@ -58,6 +69,22 @@ export default {
           .finally(() => {
             that.loading = false
           })
+    },
+    getOtherUsername() {
+      let that = this
+      that.$http.get(that.host + '/user/' + that.otherUser)
+          .then(data => {
+            that.otherUsername = data.data.username
+          })
+          .catch((error) => {
+            if (error.response) {
+              that.$message.error(error.response.data.message)
+            } else {
+              that.$message.error('请求失败')
+            }
+          })
+          .finally(() => {
+          })
     }
   },
   created() {
@@ -67,6 +94,11 @@ export default {
       title: '项目列表'
     })
     this.getData()
+  },
+  watch: {
+    '$route': function () {
+      this.getData()
+    }
   }
 }
 </script>

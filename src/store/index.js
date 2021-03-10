@@ -82,6 +82,7 @@ export default new Vuex.Store({
       let sendData = new FormData()
       sendData.append('username', user.username)
       sendData.append('password', user.password)
+      sendData.append('captcha', user.captcha)
       that.$http.post(state.host + '/session', sendData)
         .then(() => {
           this.commit('updateUser', true)
