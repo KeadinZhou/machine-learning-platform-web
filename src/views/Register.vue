@@ -93,7 +93,7 @@ export default {
       sendData.append('username', that.user.username)
       sendData.append('password', that.user.password)
       sendData.append('captcha', that.user.captcha)
-      sendData.append('organization ', that.user.organization)
+      sendData.append('organization', that.user.organization)
       that.$http.post(this.$store.state.host + '/user', sendData)
           .then(() => {
             that.$message.success('注册成功')

@@ -29,7 +29,8 @@
       <span slot="action" slot-scope="record">
         <a-space>
           <a-button type="primary" @click="$router.push({name: 'project', query: {user: record.id}})">查看项目</a-button>
-<!--          <a-button @click="$message.info(record.username)" >修改密码</a-button>-->
+          <a-button style="background: #E6A23C; color: white" @click="updateUser(record.id, {permission: 1})" v-if="record.permission === 0">设置管理员</a-button>
+          <a-button @click="updateUser(record.id, {permission: 0})" v-else>取消管理员</a-button>
           <a-button type="danger" @click="updateUser(record.id, {block: 1})" v-if="record.block === 0">禁用用户</a-button>
           <a-button @click="updateUser(record.id, {block: 0})" v-else>解除禁用</a-button>
         </a-space>
