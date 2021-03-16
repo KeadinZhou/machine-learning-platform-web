@@ -16,6 +16,7 @@
         <a-menu slot="overlay">
           <a-menu-item key="1">修改密码</a-menu-item>
           <a-menu-item key="2" v-if="user.permission === 1" @click="$router.push({name:'admin'})">用户管理</a-menu-item>
+          <a-menu-item key="4" v-if="user.permission === 1" @click="$router.push({name:'invitation'})">邀请用户</a-menu-item>
           <a-menu-item key="3" @click="logout">退出登录</a-menu-item>
         </a-menu>
       </a-dropdown>

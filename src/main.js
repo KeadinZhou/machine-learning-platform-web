@@ -8,12 +8,14 @@ import axios from 'axios'
 import 'ant-design-vue/dist/antd.css'
 import '@/components/ef/index.css'
 import moment from 'moment'
+import VueClipboard  from 'vue-clipboard2'
 import App from './App.vue'
 
 Vue.config.productionTip = false
 
 Vue.use(ElementUI,{size:'mini'})
 Vue.use(Antd)
+Vue.use(VueClipboard)
 
 axios.defaults.withCredentials = true
 Vue.prototype.$http = axios

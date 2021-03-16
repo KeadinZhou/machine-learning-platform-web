@@ -27,6 +27,11 @@
               <a-icon slot="prefix" type="home" />
             </a-input>
           </a-form-model-item>
+          <a-form-model-item prop="code">
+            <a-input v-model="user.code" placeholder="邀请码" size="large" @pressEnter="register">
+              <a-icon slot="prefix" type="idcard" />
+            </a-input>
+          </a-form-model-item>
           <a-form-model-item prop="captcha">
             <a-input v-model="user.captcha" placeholder="验证码" size="large" @pressEnter="register">
               <a-icon slot="prefix" type="safety-certificate" />
@@ -60,7 +65,8 @@ export default {
         password: '',
         password2: '',
         captcha: '',
-        organization: ''
+        organization: '',
+        code: ''
       },
       rules: {
         username: [{ required: true, message: '请输入用户名', trigger: 'blur' },],
@@ -68,6 +74,7 @@ export default {
         password2: [{ required: true, message: '请再次输入密码', trigger: 'blur' }, { validator: this.password2check, trigger: 'change' }],
         captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' },],
         organization : [{ required: true, message: '请输入组织名称', trigger: 'blur' },],
+        code : [{ required: true, message: '请输入邀请码', trigger: 'blur' },],
       }
     }
   },
@@ -94,6 +101,7 @@ export default {
       sendData.append('password', that.user.password)
       sendData.append('captcha', that.user.captcha)
       sendData.append('organization', that.user.organization)
+      sendData.append('code', that.user.code)
       that.$http.post(this.$store.state.host + '/user', sendData)
           .then(() => {
             that.$message.success('注册成功')
@@ -102,7 +110,7 @@ export default {
           .catch((error) => {
             if (error.response) {
               console.log(error.response.data.message)
-              that.$message.error(JSON.stringify(error.response.data.message))
+              that.$message.error(error.response.data.message)
             } else {
               that.$message.error('请求失败')
             }
