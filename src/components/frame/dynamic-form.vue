@@ -42,6 +42,10 @@
         <el-input v-model="nowValue[config.name]" :placeholder="`请输入(${config.type}${config.range.length ? ` [${config.range}]` : ''})`" style="width: 100%" size="medium">
         </el-input>
       </div>
+      <div v-else-if="config.type === 'dict' && config.name === 'model_kwargs'" class="dynamic-form-item-input">
+        <dict-input v-model="nowValue[config.name]" :defaultValue="getDefaultValueFromModel(nowValue.model)" style="width: 100%">
+        </dict-input>
+      </div>
       <div v-else-if="config.type === 'dict'" class="dynamic-form-item-input">
         <dict-input v-model="nowValue[config.name]"  style="width: 100%">
         </dict-input>
@@ -68,7 +72,23 @@ export default {
     }
   },
   methods: {
-
+    getDefaultValueFromModel(modelName) {
+      for (let config of this.paramsConfig) {
+        if (config.name === 'model') {
+          for (let item of config.enum) {
+            if (item[0] === modelName) {
+              return {
+                name: item[0],
+                name_zh: item[1],
+                doc_url: item[2],
+                defaultValue: item[3]
+              }
+            }
+          }
+        }
+      }
+      return null
+    }
   },
   created() {
     this.nowValue = JSON.parse(JSON.stringify(this.value))

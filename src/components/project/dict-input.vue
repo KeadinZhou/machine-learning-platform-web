@@ -1,5 +1,10 @@
 <template>
   <div>
+    <template v-if="defaultValue">
+      <el-tooltip class="item" effect="dark" content="模型参数说明" placement="top">
+        <a style="cursor: pointer" :href="defaultValue.doc_url" target="_blank"><i class="el-icon-question"></i></a>
+      </el-tooltip>
+    </template>
     <pre v-if="!edit">{{value}}</pre>
     <div v-else>
       { <br>
@@ -12,8 +17,19 @@
       </div>
       } <br><br>
     </div>
-    <el-button v-if="!edit" icon="el-icon-edit" size="mini" @click="editClick">编辑Dict</el-button>
-    <el-button v-else type="primary" icon="el-icon-check" size="mini" @click="saveClick">保存Dict</el-button>
+
+    <a-space>
+      <el-button v-if="!edit" icon="el-icon-edit" size="mini" @click="editClick">编辑Dict</el-button>
+      <el-button v-else type="primary" icon="el-icon-check" size="mini" @click="saveClick">保存Dict</el-button>
+      <template v-if="defaultValue && !edit">
+        <el-button icon="el-icon-copy-document" size="mini" @click="modalVisible = true">使用默认参数</el-button>
+      </template>
+    </a-space>
+
+    <a-modal v-model="modalVisible" title="使用默认参数确认" :maskClosable="false" okText="确认" cancelText="取消" @ok="useDefault">
+      <p>确认要使用以下默认参数吗？使用后会覆盖原有的参数设置</p>
+      <pre style="background: black; color: white">{{defaultValueToObject}}</pre>
+    </a-modal>
   </div>
 </template>
 
@@ -21,13 +37,28 @@
 export default {
   name: "dict-input",
   props: {
-    value: Object
+    value: Object,
+    defaultValue: Object
   },
   data() {
     return {
       edit: false,
       nowValue: null,
-      arrayData: []
+      arrayData: [],
+      modalVisible: false
+    }
+  },
+  computed: {
+    defaultValueToObject: function (){
+      let res = []
+      for (let item of this.defaultValue.defaultValue) {
+        res.push({
+          param: item[0],
+          defaultValue: item[2],
+          description: item[1]
+        })
+      }
+      return res
     }
   },
   methods: {
@@ -78,7 +109,19 @@ export default {
       }
       this.$emit('input', this.nowValue)
       return true
-    }
+    },
+    useDefault() {
+      this.arrayData = []
+      for (let item of this.defaultValue.defaultValue) {
+        this.arrayData.push({
+          name: item[0],
+          value: item[2],
+        })
+      }
+      this.arrayToObject()
+      this.modalVisible = false
+      this.$message.success('使用成功')
+    },
   },
 }
 </script>
