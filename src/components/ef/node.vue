@@ -69,6 +69,10 @@
         <base-console :content="consoleContent" style="height: calc(100vh - 400px)"></base-console>
       </a-modal>
 
+      <a-modal v-model="predictVisible" title="Console" :maskClosable="false" okText="确定" cancelText="取消" @ok="predictVisible = false" width="50%">
+        <predict-outcomes></predict-outcomes>
+      </a-modal>
+
     </div>
     <a-menu slot="overlay">
       <a-menu-item key="1" @click="setParamsClick">
@@ -83,6 +87,9 @@
       <a-menu-item key="4" @click="showFileClick">
         读取结果
       </a-menu-item>
+      <a-menu-item key="6" @click="showPredict" v-if="node.name.indexOf('机器学习') !== -1">
+        <span style="color: blue">结果预测</span>
+      </a-menu-item>
       <a-menu-item key="5" @click="deleteNode">
         <span style="color: red">删除节点</span>
       </a-menu-item>
@@ -95,6 +102,7 @@ import LoadingBoxFrame from '@/components/frame/loading-box-frame'
 import CSVShowTable from '@/components/project/csv-show-table'
 import DynamicForm from '@/components/frame/dynamic-form'
 import BaseConsole from '@/components/frame/base-console'
+import PredictOutcomes from '@/components/project/predict-outcomes'
 import {mapMutations, mapState} from "vuex";
 export default {
   props: {
@@ -105,7 +113,8 @@ export default {
     'loading-box-frame': LoadingBoxFrame,
     'csv-show-table': CSVShowTable,
     'dynamic-form': DynamicForm,
-    'base-console': BaseConsole
+    'base-console': BaseConsole,
+    'predict-outcomes': PredictOutcomes
   },
   data() {
     return {
@@ -124,7 +133,8 @@ export default {
       filenameChoose: '',
       showSummary: false,
       consoleVisible: false,
-      consoleContent: ''
+      consoleContent: '',
+      predictVisible: false
     }
   },
   computed: {
@@ -271,6 +281,9 @@ export default {
       this.filenameChoose = this.filenameList[0]
       this.csvVisible = true
       this.getFile(this.filenameChoose)
+    },
+    showPredict() {
+      this.predictVisible = true
     },
     getFile(filename, showSummary) {
       let that = this
