@@ -70,7 +70,7 @@
       </a-modal>
 
       <a-modal v-model="predictVisible" title="Console" :maskClosable="false" okText="确定" cancelText="取消" @ok="predictVisible = false" width="50%">
-        <predict-outcomes></predict-outcomes>
+        <predict-outcomes :outputInteger="outputInteger"></predict-outcomes>
       </a-modal>
 
     </div>
@@ -134,7 +134,8 @@ export default {
       showSummary: false,
       consoleVisible: false,
       consoleContent: '',
-      predictVisible: false
+      predictVisible: false,
+      outputInteger: false
     }
   },
   computed: {
@@ -283,6 +284,7 @@ export default {
       this.getFile(this.filenameChoose)
     },
     showPredict() {
+      this.outputInteger = (this.node.name.indexOf('分类') !== -1)
       this.predictVisible = true
     },
     getFile(filename, showSummary) {

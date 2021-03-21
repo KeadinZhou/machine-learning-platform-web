@@ -75,6 +75,9 @@ export default {
   components: {
     'csv-show-table': CSVShowTable,
   },
+  props: {
+    outputInteger: Boolean
+  },
   data() {
     return {
       pageSize,
@@ -104,7 +107,7 @@ export default {
               id: i,
               input1: '',
               input2: this.input2data + Math.random(),
-              output: this.output1data + Math.random()
+              output: this.output1data + (this.outputInteger ? (Math.round(Math.random())) : (Math.random()))
             })
       }
       this.page = 1
