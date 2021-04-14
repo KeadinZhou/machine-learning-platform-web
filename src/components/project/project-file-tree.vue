@@ -13,7 +13,7 @@
       <span v-if="buttonShow.add" class="project-file-tree-edit-add" title="新建目录" @click="addClick"><a-icon type="folder-add"/></span>
       <span v-if="buttonShow.del" class="project-file-tree-edit-delete" title="删除" @click="deleteClick"><a-icon type="delete"/></span>
     </div>
-    <input type="file" style="display: none" id="upload" @change="uploadSubmit"/>
+    <input type="file" style="display: none" id="upload" multiple @change="uploadSubmit"/>
     <a-modal v-model="editModalVisible" title="重命名" :maskClosable="false" okText="确认" cancelText="取消" @ok="editSubmit" :confirm-loading="editing">
       <a-form-model :rules="editRules" :model="editData" ref="editForm">
         <a-form-model-item prop="old_filename" label="旧文件名">
@@ -190,36 +190,91 @@ export default {
             }
           })
     },
-    uploadSubmit(e) {
+    uploadOneFile(sendData, nowIdx) {
       let that = this
-      let project_id = that.$route.params.id
-      let file = e.target.files[0]
-      let dir = (that.selected.length < 1) ? '/' : that.selected[0]
+      return new Promise((resolve, reject) => {
+        let key = 'uploading-key' + nowIdx
+        that.$message.loading({ content: '上传中...', key })
+        that.$http.post(that.host + `/file`, sendData)
+            .then(() => {
+              that.$message.success({ content: '上传成功', key })
+              if (that.selectedComponent) {
+                that.onLoadData(that.selectedComponent)
+              } else {
+                that.initLoad()
+              }
+              resolve()
+            })
+            .catch((error) => {
+              if (error.response) {
+                that.$message.error({ content: JSON.stringify(error.response.data.message), key })
+              } else {
+                that.$message.error({ content: '请求失败', key })
+              }
+              reject()
+            })
+            .finally(()=>{
+            })
+      })
+    },
+    uploadFilesSync(nowIdx, files, project_id, dir, modal) {
+      if (nowIdx >= files.length) {
+        document.getElementById('upload').value = ''
+        modal.update({
+          title: '上传成功',
+          content: `上传完成，共上传 ${nowIdx} 个文件到项目文件夹 ${dir}`,
+          okButtonProps: {
+            props: { disabled: false }
+          },
+          icon: 'check-circle'
+        })
+        return
+      }
+      modal.update({
+        content: `正在上传第 ${nowIdx+1} 个文件，${files[nowIdx].name}，请稍后...`
+      })
+      let that = this
       let sendData = new FormData()
-      let key = 'uploading-key'
-      that.$message.loading({ content: '上传中...', key })
-      sendData.append('file', file)
+      sendData.append('file', files[nowIdx])
       sendData.append('project_id', project_id)
       sendData.append('dir', dir)
-      that.$http.post(that.host + `/file`, sendData)
-          .then(() => {
-            that.$message.success({ content: '上传成功', key })
-            if (that.selectedComponent) {
-              that.onLoadData(that.selectedComponent)
-            } else {
-              that.initLoad()
-            }
-          })
-          .catch((error) => {
-            if (error.response) {
-              that.$message.error({ content: JSON.stringify(error.response.data.message), key })
-            } else {
-              that.$message.error({ content: '请求失败', key })
-            }
-          })
-          .finally(()=>{
-            document.getElementById('upload').value = ''
-          })
+      that.uploadOneFile(sendData, nowIdx)
+      .then(() => {
+        that.uploadFilesSync(nowIdx+1, files, project_id, dir, modal)
+      })
+      .catch(() => {
+        modal.update({
+          title: '上传失败',
+          content: `上传失败，第 ${nowIdx+1} 个文件 ${files[nowIdx].name} 上传失败，上传已终止，请重试`,
+          okButtonProps: {
+            props: { disabled: false }
+          },
+          icon: 'close-circle'
+        })
+        document.getElementById('upload').value = ''
+      })
+    },
+    uploadSubmit(e) {
+      let that = this
+      let files = e.target.files
+      let project_id = that.$route.params.id
+      let dir = (that.selected.length < 1) ? '/' : that.selected[0]
+      const modal = that.$info({
+        title: '文件正在上传中',
+        content: `请稍后`,
+        closable: false,
+        keyboard: false,
+        mask: true,
+        maskClosable: false,
+        centered: true,
+        icon: 'loading',
+        okButtonProps: {
+          props: { disabled: true }
+        },
+        okText: '好的'
+      })
+
+      that.uploadFilesSync(0, files, project_id, dir, modal)
     },
     editSubmit() {
       let that = this
