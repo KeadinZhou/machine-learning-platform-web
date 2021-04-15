@@ -69,8 +69,8 @@
         <base-console :content="consoleContent" style="height: calc(100vh - 400px)"></base-console>
       </a-modal>
 
-      <a-modal v-model="predictVisible" title="Console" :maskClosable="false" okText="确定" cancelText="取消" @ok="predictVisible = false" width="50%">
-        <predict-outcomes :outputInteger="outputInteger"></predict-outcomes>
+      <a-modal v-model="predictVisible" title="Console" :maskClosable="false" okText="确定" cancelText="取消" @ok="predictVisible = false" width="50%" destroyOnClose>
+        <predict-outcomes :outputInteger="outputInteger" :nodeId="node.id"></predict-outcomes>
       </a-modal>
 
     </div>

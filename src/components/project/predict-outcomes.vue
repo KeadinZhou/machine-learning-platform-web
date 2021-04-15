@@ -3,32 +3,65 @@
     <div class="admin-title">
       <b>结果预测</b>
     </div>
-    <a-table :columns="columns" :data-source="userData" size="middle" :pagination="false" :loading="loading">
-      <span slot="input1">
-        <span style="cursor: pointer" @click="type = 1 ;modalVisible = true"><a-icon type="table" /> CSV</span>
+    <div class="select-and-button-box">
+      <a-space>
+        <el-select v-model="dataSet" placeholder="请选择" size="medium" @change="getData(1)">
+          <el-option label="训练集" value="1"></el-option>
+          <el-option label="测试集" value="2"></el-option>
+        </el-select>
+        <el-button size="medium" @click="showSHAPImage">相关度分析</el-button>
+      </a-space>
+    </div>
+    <a-table :columns="dynamicColumns" :data-source="userData" size="middle" :pagination="false" :loading="loading">
+
+      <span v-for="index in inputSize" :key="index" :slot="'input'+index" slot-scope="cellData">
+        <span style="cursor: pointer" @click="modalData = cellData ;modalVisible = true"><a-icon :type="getTypeIcon(cellData.type)" /> {{cellData.type}}</span>
       </span>
-      <span slot="input2" slot-scope="input2">
-        <span style="cursor: pointer" @click="type = 2 ;modalVisible = true; modalData = input2"><i class="el-icon-picture-outline"></i> IMAGE</span>
+
+      <span v-for="index in outputSize" :key="index" :slot="'output'+index" slot-scope="cellData">
+        <span style="cursor: pointer" @click="modalData = cellData ;modalVisible = true"><a-icon :type="getTypeIcon(cellData.type)" /> {{cellData.type}}</span>
       </span>
-      <span slot="output" slot-scope="output">
-        <span style="cursor: pointer" @click="type = 3 ;modalVisible = true; modalData = output"><a-icon type="table" /> CSV</span>
+
+      <span slot="analysis" slot-scope="record">
+        <span style="cursor: pointer" @click="getSHAPAnalysis(record)"><a-icon :type="getTypeIcon('analysis')" /></span>
       </span>
+
     </a-table>
     <div class="table-pagination-box">
       <a-pagination v-model="page" :total="count" :defaultPageSize="pageSize" @change="pageChange"/>
     </div>
 
-    <a-modal v-model="modalVisible" title="数据查看" :maskClosable="false" okText="确定" cancelText="取消" @ok="modalVisible = false" :width="(type === 1) ? ('98%') : ( (type === 2) ? ('210px') : '200px' )">
+    <a-modal v-model="modalVisible" title="数据查看" :maskClosable="false" okText="确定" cancelText="取消" @ok="modalVisible = false" width="100%" :footer="null" centered destroyOnClose>
 
-      <div v-if="type === 1" :style="`max-height: ${height - 350}px;overflow: auto;`">
-        <csv-show-table :value="getCSVData(input1data)"></csv-show-table>
+      <div class="modal-content-box">
+        <template v-if="modalData.type === 'csv'">
+          <csv-show-table :value="getCSVData(modalData.data)"></csv-show-table>
+        </template>
+        <template v-else-if="modalData.type === 'analysis'">
+          <a-tabs style="height: 100%; overflow: auto">
+            <a-tab-pane key="1" tab="Waterfall">
+              <img :src="modalData.data[1]" alt="">
+            </a-tab-pane>
+            <a-tab-pane key="2" tab="Force">
+              <iframe :src="modalData.data[0]" frameborder="0" width="100%" height="500px"></iframe>
+            </a-tab-pane>
+          </a-tabs>
+        </template>
+        <template v-else-if="modalData.type === 'shap_image'">
+          <a-tabs style="height: 100%">
+            <a-tab-pane key="1" tab="Beeswarm">
+              <img :src="modalData.data[0]" alt="" height="80%">
+            </a-tab-pane>
+            <a-tab-pane key="2" tab="Bar">
+              <img :src="modalData.data[1]" alt="">
+            </a-tab-pane>
+            <a-tab-pane key="3" tab="Force">
+              <iframe :src="modalData.data[2]" frameborder="0" width="80%" height="500px"></iframe>
+            </a-tab-pane>
+          </a-tabs>
+        </template>
       </div>
-      <div v-else-if="type === 2">
-        <img :src="modalData" />
-      </div>
-      <div v-if="type === 3" :style="`max-height: ${height - 350}px;overflow: auto;`">
-        <csv-show-table :value="getCSVData(modalData)"></csv-show-table>
-      </div>
+
 
     </a-modal>
   </div>
@@ -38,80 +71,192 @@
 import {mapState} from "vuex";
 import CSVShowTable from '@/components/project/csv-show-table'
 const pageSize = 20
-const columns = [
-  {
-    title: '#',
-    dataIndex: 'id',
-    key: 'id',
-    scopedSlots: { customRender: 'id' },
-    width: '60px',
-    align: 'center'
-  },
-  {
-    title: '输入1',
-    dataIndex: 'input1',
-    key: 'input1',
-    scopedSlots: { customRender: 'input1' },
-    align: 'center'
-  },
-  {
-    title: '输入2',
-    dataIndex: 'input2',
-    key: 'input2',
-    scopedSlots: { customRender: 'input2' },
-    align: 'center'
-  },
-  {
-    title: '输出',
-    dataIndex: 'output',
-    key: 'output',
-    scopedSlots: { customRender: 'output' },
-    align: 'center'
-  },
-];
+// const columns = [
+//   {
+//     title: '#',
+//     dataIndex: 'id',
+//     key: 'id',
+//     scopedSlots: { customRender: 'id' },
+//     width: '60px',
+//     align: 'center'
+//   },
+//   {
+//     title: '输入1',
+//     dataIndex: 'input1',
+//     key: 'input1',
+//     scopedSlots: { customRender: 'input1' },
+//     align: 'center'
+//   },
+//   {
+//     title: '输入2',
+//     dataIndex: 'input2',
+//     key: 'input2',
+//     scopedSlots: { customRender: 'input2' },
+//     align: 'center'
+//   },
+//   {
+//     title: '输出',
+//     dataIndex: 'output',
+//     key: 'output',
+//     scopedSlots: { customRender: 'output' },
+//     align: 'center'
+//   },
+// ];
 
 export default {
   name: "predict-outcomes",
   components: {
+    // eslint-disable-next-line vue/no-unused-components
     'csv-show-table': CSVShowTable,
   },
   props: {
-    outputInteger: Boolean
+    outputInteger: Boolean,
+    nodeId: Number
   },
   data() {
     return {
       pageSize,
-      columns,
-      loading: false,
-      userData: [],
       page: 1,
       count: 0,
+      dataSet: "1",
+      loading: false,
+      userData: [],
       modalVisible: false,
-      input1data: 'region,tenure,age,marital,address,income,ed,employ,retire,gender,reside,tollfree,equip,callcard,wireless,longmon,tollmon,equipmon,cardmon,wiremon,longten,tollten,equipten,cardten,wireten,multline,voice,pager,internet,callid,callwait,forward,confer,ebill,loglong,logtoll,logequi,logcard,logwire,lninc,custcat,churn\n' +
-          '2,13,44,1,9,64.000000,4,5,0.000000,0,2,0,0,1,0,3.700000,0.000000,0.000000,7.500000,0.000000,37.450000,0.000000,0.000000,110.000000,0.000000,0,0,0,0,0,0,1,0,0,1.308333,,,2.014903,,4.158883,1,1',
-      input2data: 'https://ml-api.newitd.com/captcha?k=',
-      output1data: 'result\n',
-      type: 1,
-      modalData: ''
+      modalData: {},
+      dynamicColumns: [],
+      inputSize: 0,
+      outputSize: 0
     }
   },
   computed: {
     ...mapState(['user', 'host', 'buildGetQuery'])
   },
   methods: {
-    getData() {
-      this.userData = []
-      for (let i = 1; i <= 20; i++) {
-        this.userData.push(
-            {
-              id: i,
-              input1: '',
-              input2: this.input2data + Math.random(),
-              output: this.output1data + (this.outputInteger ? (Math.round(Math.random())) : (Math.random()))
-            })
+    getTypeIcon(type) {
+      switch (type) {
+        case 'csv': return 'table'
+        case 'analysis': return 'project'
+        default: return 'question'
       }
-      this.page = 1
-      this.count = 100
+    },
+    dynamicColumnsInit(inputSize, outputSize) {
+      this.dynamicColumns = []
+      this.dynamicColumns.push({
+        title: '#',
+        dataIndex: 'id',
+        key: 'id',
+        scopedSlots: { customRender: 'id' },
+        width: '60px',
+        align: 'center'
+      })
+      for (let i=1;i<=inputSize;i++) {
+        this.dynamicColumns.push({
+          title: '输入' + ((inputSize > 1 )? (i) : ('') ),
+          dataIndex: 'input' + i,
+          key: 'input1' + i,
+          scopedSlots: { customRender: 'input' + i },
+          align: 'center'
+        })
+      }
+      for (let i=1;i<=outputSize;i++) {
+        this.dynamicColumns.push({
+          title: '输出' + ((outputSize > 1 )? (i) : ('') ),
+          dataIndex: 'output' + i,
+          key: 'output1' + i,
+          scopedSlots: { customRender: 'output' + i },
+          align: 'center'
+        })
+      }
+      this.dynamicColumns.push({
+        title: '分析',
+        key: 'analysis',
+        scopedSlots: { customRender: 'analysis'},
+        align: 'center'
+      })
+    },
+    dataInit(allData) {
+      let that = this
+      let meta = allData.meta
+      that.count = meta.count
+      that.page = meta.page
+
+      let inputs = allData.input
+      let outputs = allData.output
+      let dataLen = outputs[0].data.length
+      let idDx = (meta.page - 1) * meta.page_size
+
+      let inputSize = inputs.length
+      let outputSize = outputs.length
+
+      that.inputSize = inputSize
+      that.outputSize = outputSize
+
+      that.dynamicColumnsInit(inputSize, outputSize)
+
+      that.userData = []
+      for (let i=0;i<dataLen;i++) {
+        let item = {}
+        for (let j=0;j<inputSize;j++) {
+          item['input'+(j+1)] = {
+            data: inputs[j].data[i],
+            type: inputs[j].type
+          }
+        }
+        for (let j=0;j<inputSize;j++) {
+          item['output'+(j+1)] = {
+            data: outputs[j].data[i],
+            type: outputs[j].type
+          }
+        }
+        item.id = i+idDx+1
+        that.userData.push(item)
+      }
+      console.log(that.userData)
+    },
+    getData(page) {
+      let that = this
+      let query = {
+        type: that.dataSet,
+        page: page,
+        pageSize: that.pageSize
+      }
+      that.loading = true
+      that.$http.get(that.host + `/node/${that.nodeId}/predict` + that.buildGetQuery(query))
+          .then(data => {
+            console.log(data.data)
+            that.dataInit(data.data)
+          })
+          .catch((error) => {
+            if (error.response) {
+              that.$message.error(error.response.data.message)
+            } else {
+              that.$message.error('请求失败')
+            }
+          })
+          .finally(() => {
+            that.loading = false
+          })
+    },
+    showSHAPImage() {
+      this.modalData = {
+        data: [
+          `${this.host}/node/${this.nodeId}/predict/list${this.buildGetQuery({type: this.dataSet, shap_type: 1})}`,
+          `${this.host}/node/${this.nodeId}/predict/list${this.buildGetQuery({type: this.dataSet, shap_type: 2})}`,
+          `${this.host}/node/${this.nodeId}/predict/list${this.buildGetQuery({type: this.dataSet, shap_type: 3})}`,
+        ],
+        type: 'shap_image'
+      }
+      this.modalVisible = true
+    },
+    getSHAPAnalysis(record) {
+      this.modalData = {
+        data: [
+          `${this.host}/node/${this.nodeId}/predict/analysis${this.buildGetQuery({type: this.dataSet, shap_type: 1, data_id: record.id})}`,
+          `${this.host}/node/${this.nodeId}/predict/analysis${this.buildGetQuery({type: this.dataSet, shap_type: 2, data_id: record.id})}`,
+        ],
+        type: 'analysis'
+      }
+      this.modalVisible = true
     },
     getCSVData(str) {
       let res = str.split('\n')
@@ -120,23 +265,13 @@ export default {
       }
       return res
     },
-    // eslint-disable-next-line no-unused-vars
     pageChange(page) {
-      // this.$router.push({
-      //   name: 'admin',
-      //   query: {
-      //     page: page
-      //   }
-      // })
+      this.page = page
+      this.getData(page)
     }
   },
   created() {
-    this.getData()
-  },
-  watch: {
-    '$route': function () {
-      this.getData()
-    }
+    this.getData(1)
   }
 }
 </script>
@@ -149,6 +284,18 @@ export default {
 }
 .admin-title{
   font-size: 20px;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
+}
+
+.select-and-button-box{
+  margin-bottom: 30px;
+}
+.modal-content-box{
+  width: 98vw;
+  height: 90vh;
+  overflow: auto;
+  /*display: flex;*/
+  /*flex-direction: column;*/
+  /*align-items: center;*/
 }
 </style>
