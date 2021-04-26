@@ -1,10 +1,20 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import router from '../router'
+import in18 from "@/in18";
 
 Vue.use(Vuex)
 
 const host = 'https://ml-api.newitd.com'
+
+const ML_IN18_VALUE = 'ML_IN18_VALUE'
+
+const defaultConfiguration = {
+  "zh-image": 'login.jpg',
+  "zh-title": '人工智能可视化建模平台',
+  "en-image": "",
+  "en-title": "Visual Modeling Platform"
+}
 
 export default new Vuex.Store({
   state: {
@@ -41,6 +51,9 @@ export default new Vuex.Store({
     nodeType: new Map(),
     nodeExtra: new Map(),
     dataForFrame: {},
+    in18Value: 'zh',
+    in18Data: {},
+    configuration: defaultConfiguration
   },
   mutations: {
     updateCurrentPage(state, data) {
@@ -235,6 +248,46 @@ export default new Vuex.Store({
         }
         state.dataForFrame = dataForFrame
       }
+    },
+    updateConfiguration(state) {
+      let that = this._vm
+      let self = this
+      let value = localStorage.getItem(ML_IN18_VALUE)
+      state.in18Value = value?value:'zh'
+      that.$http.get(state.host + `/configuration`)
+        .then(data => {
+          state.configuration = {}
+          let Data = data.data.data
+          for (let item of Data) {
+            state.configuration[item.key] = item.value
+          }
+          self.commit('updateDocumentTitle', state.configuration[`${value}-title`])
+          console.log(state.configuration)
+        })
+        .catch((error) => {
+          if (error.response) {
+            that.$message.error(error.response.data.message)
+          } else {
+            that.$message.error('请求失败')
+          }
+        })
+        .finally(() => {
+        })
+    },
+    updateDocumentTitle(state, data) {
+      document.title = data
+    },
+    loadIn18Config(state, data) {
+      if (!data) {
+        data = state.in18Value
+      }
+      this.commit('updateDocumentTitle', state.configuration[`${data}-title`])
+      state.in18Data = in18.getIn18Config(data)
+    },
+    updateIn18Value(state, data) {
+      localStorage.setItem(ML_IN18_VALUE, data)
+      state.in18Value = data
+      this.commit('loadIn18Config', data)
     }
   },
   actions: {

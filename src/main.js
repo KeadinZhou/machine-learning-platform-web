@@ -27,5 +27,7 @@ new Vue({
   render: h => h(App),
   created() {
     store.commit('updateUser')
+    store.commit('updateConfiguration')
+    store.commit('loadIn18Config')
   }
 }).$mount('#app')

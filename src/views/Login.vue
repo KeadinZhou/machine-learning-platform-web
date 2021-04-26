@@ -2,44 +2,46 @@
   <div>
     <a-card class="login-box" :hoverable="true">
       <div class="login-title">
-        <h1><b>人工智能可视化建模平台</b></h1>
-        <h2>用户登录</h2>
+        <h1><b>{{configuration[`${in18Value}-title`]}}</b></h1>
+        <h2>{{in18Data.USER_LOGIN}}</h2>
       </div>
       <div class="login-form-box">
         <a-form-model :rules="rules" :model="user" ref="loginForm">
           <a-form-model-item prop="username">
-            <a-input v-model="user.username" placeholder="用户名" size="large" @pressEnter="login">
+            <a-input v-model="user.username" :placeholder="in18Data.USERNAME" size="large" @pressEnter="login">
               <a-icon slot="prefix" type="user" />
             </a-input>
           </a-form-model-item>
           <a-form-model-item prop="password">
-            <a-input v-model="user.password" placeholder="密码" type="password" size="large" @pressEnter="login">
+            <a-input v-model="user.password" :placeholder="in18Data.PASSWORD" type="password" size="large" @pressEnter="login">
               <a-icon slot="prefix" type="lock" />
             </a-input>
           </a-form-model-item>
           <a-form-model-item prop="captcha">
-            <a-input v-model="user.captcha" placeholder="验证码" size="large" @pressEnter="login">
+            <a-input v-model="user.captcha" :placeholder="in18Data.CAPTCHA" size="large" @pressEnter="login">
               <a-icon slot="prefix" type="safety-certificate" />
-              <a-tooltip slot="suffix" title="看不清?点击更换图片">
-                <img height="34px" :src="captchaUrl" alt="看不清？点击更换图片" @click="captchaUrl = $store.state.host + '/captcha?k=' + Math.random()">
+              <a-tooltip slot="suffix" :title="in18Data.CAPTCHA_CLICK_TO_CHANGE">
+                <img height="34px" :src="captchaUrl" :alt="in18Data.CAPTCHA_CLICK_TO_CHANGE" @click="captchaUrl = $store.state.host + '/captcha?k=' + Math.random()">
               </a-tooltip>
             </a-input>
           </a-form-model-item>
         </a-form-model>
-        <a-button type="primary" style="width: 100%" @click="login">登录</a-button>
-        <div class="login-reg-switch" @click="$router.push({name: 'register'})">还没账号? 点此注册</div>
+        <a-button type="primary" style="width: 100%" @click="login">{{in18Data.LOGIN}}</a-button>
+        <div class="login-reg-switch" @click="$router.push({name: 'register'})">{{in18Data.CLICK_TO_REGISTER}}</div>
       </div>
     </a-card>
     <div>
       <el-image
           class="login-page-image"
-          src="login.jpg"
+          :src="configuration[`${in18Value}-image`]"
           fit="contain"></el-image>
     </div>
   </div>
 </template>
 
 <script>
+import {mapState} from "vuex";
+
 export default {
   name: "Login",
   data() {
@@ -51,11 +53,14 @@ export default {
         captcha: ''
       },
       rules: {
-        username: [{ required: true, message: '请输入用户名', trigger: 'blur' },],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' },],
-        captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' },],
+        username: [{ required: true, message: '', trigger: 'blur' },],
+        password: [{ required: true, message: '', trigger: 'blur' },],
+        captcha: [{ required: true, message: '', trigger: 'blur' },],
       }
     }
+  },
+  computed: {
+    ...mapState(['host', 'buildGetQuery', 'in18Value', 'configuration', 'in18Data'])
   },
   methods: {
     login() {
@@ -65,8 +70,8 @@ export default {
           that.$store.commit('login', this.user)
         }
       })
-    }
-  },
+    },
+},
   created() {
     this.$store.commit('updateCurrentPage', {
       page: 'login'
