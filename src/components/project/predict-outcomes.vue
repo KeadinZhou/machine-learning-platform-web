@@ -1,15 +1,15 @@
 <template>
   <div class="admin-main-box">
     <div class="admin-title">
-      <b>结果预测</b>
+      <b>{{in18Data.PREDICT_TITLE}}</b>
     </div>
     <div class="select-and-button-box">
       <a-space>
-        <el-select v-model="dataSet" placeholder="请选择" size="medium" @change="getData(1)">
-          <el-option label="训练集" value="1"></el-option>
-          <el-option label="测试集" value="2"></el-option>
+        <el-select v-model="dataSet" :placeholder="in18Data.CLICK_TO_CHOOSE" size="medium" @change="getData(1)">
+          <el-option :label="in18Data.TRAINING_SET" value="1"></el-option>
+          <el-option :label="in18Data.TESTING_SET" value="2"></el-option>
         </el-select>
-        <el-button size="medium" @click="showSHAPImage">相关度分析</el-button>
+        <el-button size="medium" @click="showSHAPImage">{{in18Data.CORRELATION_ANALYSIS}}</el-button>
       </a-space>
     </div>
     <a-table :columns="dynamicColumns" :data-source="userData" size="middle" :pagination="false" :loading="loading">
@@ -31,7 +31,7 @@
       <a-pagination v-model="page" :total="count" :defaultPageSize="pageSize" @change="pageChange"/>
     </div>
 
-    <a-modal v-model="modalVisible" title="数据查看" :maskClosable="false" okText="确定" cancelText="取消" @ok="modalVisible = false" width="100%" :footer="null" centered destroyOnClose>
+    <a-modal v-model="modalVisible" :title="in18Data.VIEW_DATA" :maskClosable="false" :okText="in18Data.CONFIRM" :cancelText="in18Data.CANCEL" @ok="modalVisible = false" width="100%" :footer="null" centered destroyOnClose>
 
       <div class="modal-content-box">
         <template v-if="modalData.type === 'csv'">
@@ -129,7 +129,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user', 'host', 'buildGetQuery'])
+    ...mapState(['user', 'host', 'buildGetQuery', 'in18Data'])
   },
   methods: {
     getTypeIcon(type) {
@@ -151,7 +151,7 @@ export default {
       })
       for (let i=1;i<=inputSize;i++) {
         this.dynamicColumns.push({
-          title: '输入' + ((inputSize > 1 )? (i) : ('') ),
+          title: this.in18Data.INPUT + ((inputSize > 1 )? (i) : ('') ),
           dataIndex: 'input' + i,
           key: 'input1' + i,
           scopedSlots: { customRender: 'input' + i },
@@ -160,7 +160,7 @@ export default {
       }
       for (let i=1;i<=outputSize;i++) {
         this.dynamicColumns.push({
-          title: '输出' + ((outputSize > 1 )? (i) : ('') ),
+          title: this.in18Data.OUTPUT + ((outputSize > 1 )? (i) : ('') ),
           dataIndex: 'output' + i,
           key: 'output1' + i,
           scopedSlots: { customRender: 'output' + i },
@@ -168,7 +168,7 @@ export default {
         })
       }
       this.dynamicColumns.push({
-        title: '分析',
+        title: this.in18Data.ANALYSIS,
         key: 'analysis',
         scopedSlots: { customRender: 'analysis'},
         align: 'center'

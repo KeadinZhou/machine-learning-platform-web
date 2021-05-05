@@ -1,7 +1,7 @@
 <template>
   <div>
     <template v-if="defaultValue">
-      <el-tooltip class="item" effect="dark" content="模型参数说明" placement="top">
+      <el-tooltip class="item" effect="dark" :content="in18Data.DICT_INPUT_ABOUT" placement="top">
         <a style="cursor: pointer" :href="defaultValue.doc_url" target="_blank"><i class="el-icon-question"></i></a>
       </el-tooltip>
     </template>
@@ -19,21 +19,23 @@
     </div>
 
     <a-space>
-      <el-button v-if="!edit" icon="el-icon-edit" size="mini" @click="editClick">编辑Dict</el-button>
-      <el-button v-else type="primary" icon="el-icon-check" size="mini" @click="saveClick">保存Dict</el-button>
+      <el-button v-if="!edit" icon="el-icon-edit" size="mini" @click="editClick">{{in18Data.DICT_INPUT_EDIT}}</el-button>
+      <el-button v-else type="primary" icon="el-icon-check" size="mini" @click="saveClick">{{in18Data.DICT_INPUT_SAVE}}</el-button>
       <template v-if="defaultValue && !edit">
-        <el-button icon="el-icon-copy-document" size="mini" @click="modalVisible = true">使用默认参数</el-button>
+        <el-button icon="el-icon-copy-document" size="mini" @click="modalVisible = true">{{in18Data.DICT_INPUT_USES_DEFAULT}}</el-button>
       </template>
     </a-space>
 
-    <a-modal v-model="modalVisible" title="使用默认参数确认" :maskClosable="false" okText="确认" cancelText="取消" @ok="useDefault">
-      <p>确认要使用以下默认参数吗？使用后会覆盖原有的参数设置</p>
+    <a-modal v-model="modalVisible" :title="in18Data.DICT_INPUT_USES_DEFAULT" :maskClosable="false" :okText="in18Data.CONFIRM" :cancelText="in18Data.CANCEL" @ok="useDefault">
+      <p>{{in18Data.DICT_INPUT_USE_DEFAULT_WARNING}}</p>
       <pre style="background: black; color: white">{{defaultValueToObject}}</pre>
     </a-modal>
   </div>
 </template>
 
 <script>
+import {mapState} from "vuex";
+
 export default {
   name: "dict-input",
   props: {
@@ -49,6 +51,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['in18Data']),
     defaultValueToObject: function (){
       let res = []
       for (let item of this.defaultValue.defaultValue) {

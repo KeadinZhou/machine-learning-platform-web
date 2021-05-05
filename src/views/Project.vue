@@ -37,7 +37,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['host'])
+    ...mapState(['host', 'in18Data'])
   },
   methods: {
     getData() {
@@ -51,7 +51,7 @@ export default {
             that.$store.commit('updateCurrentPage', {
               page: 'project_open',
               icon: 'apartment',
-              title: `项目建模 - ${that.projectInfo.name}`
+              title: `${that.in18Data.PROJECT_PAGE_TITLE} - ${that.projectInfo.name}`
             })
           })
           .catch((error) => {
@@ -70,7 +70,7 @@ export default {
     this.$store.commit('updateCurrentPage', {
       page: 'project_open',
       icon: 'apartment',
-      title: '项目建模'
+      title: this.in18Data.PROJECT_PAGE_TITLE
     })
     this.getData()
   },

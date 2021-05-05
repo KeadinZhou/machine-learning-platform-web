@@ -1,7 +1,7 @@
 <template>
   <div class="admin-main-box">
     <div class="admin-title">
-      用户列表
+      {{in18Data.ADMIN_USER_LIST}}
     </div>
     <a-table :columns="columns" :data-source="userData" size="middle" :pagination="false" :loading="loading">
       <span slot="username" slot-scope="username">
@@ -9,30 +9,30 @@
       </span>
       <span slot="permission" slot-scope="permission">
         <a-tag color="#87d068" v-if="permission === 0">
-          普通用户
+          {{in18Data.ADMIN_USER_NORMAL_USER}}
         </a-tag>
         <a-tag color="#108ee9" v-else-if="permission === 1">
-          管理员
+          {{in18Data.ADMIN_USER_ADMIN}}
         </a-tag>
         <a-tag color="#f50" v-else>
-          禁用
+          {{in18Data.ADMIN_USER_FORBIDDEN}}
         </a-tag>
       </span>
       <span slot="block" slot-scope="block">
         <a-tag color="#87d068" v-if="block === 0">
-          正常
+          {{in18Data.ADMIN_BLOCK_NORMAL}}
         </a-tag>
         <a-tag color="#f50" v-else>
-          禁用
+          {{in18Data.ADMIN_BLOCK_FORBIDDEN}}
         </a-tag>
       </span>
       <span slot="action" slot-scope="record">
         <a-space>
-          <a-button type="primary" @click="$router.push({name: 'project', query: {user: record.id}})">查看项目</a-button>
-          <a-button style="background: #E6A23C; color: white" @click="updateUser(record.id, {permission: 1})" v-if="record.permission === 0">设置管理员</a-button>
-          <a-button @click="updateUser(record.id, {permission: 0})" v-else>取消管理员</a-button>
-          <a-button type="danger" @click="updateUser(record.id, {block: 1})" v-if="record.block === 0">禁用用户</a-button>
-          <a-button @click="updateUser(record.id, {block: 0})" v-else>解除禁用</a-button>
+          <a-button type="primary" @click="$router.push({name: 'project', query: {user: record.id}})">{{in18Data.ADMIN_ACTION_WATCH_PROJECT}}</a-button>
+          <a-button style="background: #E6A23C; color: white" @click="updateUser(record.id, {permission: 1})" v-if="record.permission === 0">{{in18Data.ADMIN_ACTION_MAKE_ADMIN}}</a-button>
+          <a-button @click="updateUser(record.id, {permission: 0})" v-else>{{in18Data.ADMIN_ACTION_CANCEL_ADMIN}}</a-button>
+          <a-button type="danger" @click="updateUser(record.id, {block: 1})" v-if="record.block === 0">{{in18Data.ADMIN_ACTION_BLOCK_USER}}</a-button>
+          <a-button @click="updateUser(record.id, {block: 0})" v-else>{{in18Data.ADMIN_ACTION_CANCEL_BLOCK_USER}}</a-button>
         </a-space>
       </span>
     </a-table>
@@ -56,6 +56,7 @@ const columns = [
   },
   {
     title: '用户名',
+    titleIn18Key: 'ADMIN_TABLE_TITLE_USERNAME',
     dataIndex: 'username',
     key: 'username',
     scopedSlots: { customRender: 'username' },
@@ -64,6 +65,7 @@ const columns = [
   },
   {
     title: '权限',
+    titleIn18Key: 'ADMIN_TABLE_TITLE_PERMISSION',
     dataIndex: 'permission',
     key: 'permission',
     scopedSlots: { customRender: 'permission' },
@@ -72,6 +74,7 @@ const columns = [
   },
   {
     title: '状态',
+    titleIn18Key: 'ADMIN_TABLE_TITLE_STATUS',
     dataIndex: 'block',
     key: 'block',
     scopedSlots: { customRender: 'block' },
@@ -80,6 +83,7 @@ const columns = [
   },
   {
     title: '所属机构',
+    titleIn18Key: 'ADMIN_TABLE_TITLE_ORGANIZATION',
     dataIndex: 'organization',
     key: 'organization',
     scopedSlots: { customRender: 'organization' },
@@ -88,6 +92,7 @@ const columns = [
   },
   {
     title: '动作',
+    titleIn18Key: 'ADMIN_TABLE_TITLE_ACTION',
     scopedSlots: { customRender: 'action' },
     width: '200px',
     align: 'center'
@@ -108,7 +113,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user', 'host', 'buildGetQuery'])
+    ...mapState(['user', 'host', 'buildGetQuery', 'in18Data'])
   },
   methods: {
     ...mapMutations(['updateCurrentPage']),
@@ -173,15 +178,23 @@ export default {
           page: page
         }
       })
+    },
+    updateTableColumnTitle() {
+      for (let item of this.columns) {
+        if (item.titleIn18Key) {
+          item.title = this.in18Data[item.titleIn18Key]
+        }
+      }
     }
   },
   created() {
     this.updateCurrentPage({
       page: 'admin',
       icon: 'deployment-unit',
-      title: '用户管理'
+      title: this.in18Data.ADMIN_PAGE_TITLE
     })
     this.getData()
+    this.updateTableColumnTitle()
   },
   watch: {
     '$route': function () {

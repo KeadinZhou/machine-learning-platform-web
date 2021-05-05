@@ -1,7 +1,7 @@
 <template>
   <div class="page-nav" v-if="current_page.page !== 'login' && current_page.page !== 'register'">
     <div class="page-nav-title-icon">
-      <div class="page-nav-icon" title="点击返回项目首页" @click="$router.push({name: 'project'})">
+      <div class="page-nav-icon" :title="in18Data.NAV_BACK_TO_PROJECTS" @click="$router.push({name: 'project'})">
         <a-icon :type="current_page.icon" />
       </div>
       <div class="page-nav-title">
@@ -14,10 +14,10 @@
           <a-icon type="user" /> {{user.username}} <a-icon type="down" />
         </a>
         <a-menu slot="overlay">
-          <a-menu-item key="1">修改密码</a-menu-item>
-          <a-menu-item key="2" v-if="user.permission === 1" @click="$router.push({name:'admin'})">用户管理</a-menu-item>
-          <a-menu-item key="4" v-if="user.permission === 1" @click="$router.push({name:'invitation'})">邀请用户</a-menu-item>
-          <a-menu-item key="3" @click="logout">退出登录</a-menu-item>
+          <a-menu-item key="1">{{in18Data.NAV_PASSWORD}}</a-menu-item>
+          <a-menu-item key="2" v-if="user.permission === 1" @click="$router.push({name:'admin'})">{{in18Data.NAV_USER}}</a-menu-item>
+          <a-menu-item key="4" v-if="user.permission === 1" @click="$router.push({name:'invitation'})">{{in18Data.NAV_INVITATION}}</a-menu-item>
+          <a-menu-item key="3" @click="logout">{{in18Data.NAV_LOGOUT}}</a-menu-item>
         </a-menu>
       </a-dropdown>
     </a-space>
@@ -29,7 +29,7 @@ import { mapState, mapMutations } from 'vuex'
 export default {
   name: "page-nav",
   computed: {
-    ...mapState(['user', 'current_page'])
+    ...mapState(['user', 'current_page', 'in18Data'])
   },
   methods: {
     ...mapMutations(['logout'])

@@ -2,7 +2,7 @@
   <div>
     <a-card :hoverable="true" class="project-list-item project-list-item-add" v-if="add" @click="onAddClick">
       <div>
-        <a-icon type="plus" /> 创建项目
+        <a-icon type="plus" /> {{in18Data.PROJECT_CREATE}}
       </div>
     </a-card>
     <a-card :hoverable="true" class="project-list-item" v-else>
@@ -18,33 +18,33 @@
         </div>
       </div>
       <template slot="actions" class="project-list-item-action">
-        <a-icon key="open" type="folder-open" title="打开项目" @click="$router.push({name: 'project_open', params: {id: project.id}})"/>
-        <a-icon key="run" type="play-circle" title="运行项目" />
-        <a-dropdown title="更多">
+        <a-icon key="open" type="folder-open" :title="in18Data.PROJECT_OPEN" @click="$router.push({name: 'project_open', params: {id: project.id}})"/>
+        <a-icon key="run" type="play-circle" :title="in18Data.PROJECT_RUN" />
+        <a-dropdown :title="in18Data.MORE">
           <a class="ant-dropdown-link" @click="e => e.preventDefault()">
             <a-icon type="ellipsis" />
           </a>
           <a-menu slot="overlay">
             <a-menu-item @click="onEditClick">
-              <a-icon type="edit" />编辑项目
+              <a-icon type="edit" />{{in18Data.PROJECT_EDIT}}
             </a-menu-item>
             <a-menu-item @click="onDeleteClick">
-              <a-icon type="delete" style="color: red"/>删除项目
+              <a-icon type="delete" style="color: red"/>{{in18Data.PROJECT_DELETE}}
             </a-menu-item>
           </a-menu>
         </a-dropdown>
       </template>
     </a-card>
-    <a-modal v-model="addVisible" :title="addMode?'添加项目':'编辑项目'" :maskClosable="false" :okText="addMode?'创建':'修改'" cancelText="取消" @ok="addSubmitCheck" :confirm-loading="submitting">
+    <a-modal v-model="addVisible" :title="addMode?in18Data.PROJECT_CREATE:in18Data.PROJECT_EDIT" :maskClosable="false" :okText="addMode?in18Data.CREATE:in18Data.SAVE" :cancelText="in18Data.CANCEL" @ok="addSubmitCheck" :confirm-loading="submitting">
       <a-form-model :rules="addRules" :model="addData" ref="addForm">
-        <a-form-model-item prop="name" label="项目名称">
-          <a-input v-model="addData.name" placeholder="项目名称"/>
+        <a-form-model-item prop="name" :label="in18Data.PROJECT_NAME">
+          <a-input v-model="addData.name" :placeholder="in18Data.PROJECT_NAME"/>
         </a-form-model-item>
-        <a-form-model-item prop="description" label="项目描述">
-          <a-textarea v-model="addData.description" placeholder="项目描述" :auto-size="{ minRows: 3, maxRows: 5 }"/>
+        <a-form-model-item prop="description" :label="in18Data.PROJECT_DESCRIPTION">
+          <a-textarea v-model="addData.description" :placeholder="in18Data.PROJECT_DESCRIPTION" :auto-size="{ minRows: 3, maxRows: 5 }"/>
         </a-form-model-item>
-        <a-form-model-item prop="tag" label="项目标签">
-          <a-input v-model="addData.tag" placeholder="项目标签"/>
+        <a-form-model-item prop="tag" :label="in18Data.PROJECT_TAG">
+          <a-input v-model="addData.tag" :placeholder="in18Data.PROJECT_TAG"/>
         </a-form-model-item>
       </a-form-model>
     </a-modal>
@@ -69,16 +69,16 @@ export default {
         tag: ''
       },
       addRules: {
-        name: [{ required: true, message: '请输入项目名称', trigger: 'blur' },],
-        description: [{ required: true, message: '请输入项目描述', trigger: 'blur' },],
-        tag: [{ required: true, message: '请输入项目标签', trigger: 'blur' },],
+        name: [{ required: true, message: '', trigger: 'blur' },],
+        description: [{ required: true, message: '', trigger: 'blur' },],
+        tag: [{ required: true, message: '', trigger: 'blur' },],
       },
       addVisible: false,
       submitting: false
     }
   },
   computed: {
-    ...mapState(['crc32', 'host'])
+    ...mapState(['crc32', 'host', 'in18Data'])
   },
   methods: {
     onAddClick() {
@@ -98,10 +98,10 @@ export default {
     onDeleteClick() {
       let that = this
       that.$confirm({
-        title: '警告',
+        title: that.in18Data.WARNING,
         content: `确认要删除项目 ${that.project.name} 吗？项目删除后不可恢复`,
-        cancelText: '取消',
-        okText: '确认',
+        cancelText: that.in18Data.CANCEL,
+        okText: that.in18Data.CONFIRM,
         icon: 'warning',
         onOk() {
           that.deleteSubmit()

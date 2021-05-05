@@ -1,37 +1,37 @@
 <template>
   <div class="invitation-main-box">
     <div class="invitation-title">
-      我的邀请码
+      {{in18Data.INVITATION_TITLE}}
     </div>
 
-    <a-button type="primary" style="margin-bottom: 50px" :loading="newing" @click="newCode">生成新的邀请码</a-button>
+    <a-button type="primary" style="margin-bottom: 50px" :loading="newing" @click="newCode">{{in18Data.INVITATION_NEW}}</a-button>
 
-    <a-modal v-model="newVisible" title="新的邀请码" :maskClosable="false" okText="确认" cancelText="取消" @ok="newVisible = false">
+    <a-modal v-model="newVisible" :title="in18Data.INVITATION_NEW" :maskClosable="false" :okText="in18Data.CONFIRM" :cancelText="in18Data.CANCEL" @ok="newVisible = false">
       <a-descriptions bordered :column="1">
-        <a-descriptions-item label="编号">
+        <a-descriptions-item :label="in18Data.ID">
           {{ newCodeData.id }}
         </a-descriptions-item>
-        <a-descriptions-item label="邀请码">
-          {{ newCodeData.code }}  <span style="cursor: pointer" title="点击复制到粘贴板" v-clipboard:copy="newCodeData.code" v-clipboard:error="copyError" v-clipboard:success="copySuccess"><a-icon type="copy" /></span>
+        <a-descriptions-item :label="in18Data.INVITATION_CODE">
+          {{ newCodeData.code }}  <span style="cursor: pointer" :title="in18Data.CLICK_TO_COPY" v-clipboard:copy="newCodeData.code" v-clipboard:error="copyError" v-clipboard:success="copySuccess"><a-icon type="copy" /></span>
         </a-descriptions-item>
       </a-descriptions>
     </a-modal>
 
     <a-table :columns="columns" :data-source="allData" size="middle" :pagination="false" :loading="loading">
       <span slot="code" slot-scope="code">
-        <b>{{code}}</b> <span style="cursor: pointer" title="点击复制到粘贴板" v-clipboard:copy="code" v-clipboard:error="copyError" v-clipboard:success="copySuccess"><a-icon type="copy" /></span>
+        <b>{{code}}</b> <span style="cursor: pointer" :title="in18Data.CLICK_TO_COPY" v-clipboard:copy="code" v-clipboard:error="copyError" v-clipboard:success="copySuccess"><a-icon type="copy" /></span>
       </span>
       <span slot="is_used" slot-scope="is_used">
         <a-tag color="#87d068" v-if="!is_used">
-          未使用
+          {{in18Data.INVITATION_UNUSED}}
         </a-tag>
         <a-tag color="#f50" v-else>
-          已使用
+          {{in18Data.INVITATION_USED}}
         </a-tag>
       </span>
       <span slot="action" slot-scope="record">
         <a-space>
-          <a-button type="danger" @click="deleteCode(record.id)" ><a-icon type="delete" />删除该邀请码</a-button>
+          <a-button type="danger" @click="deleteCode(record.id)" ><a-icon type="delete" />{{in18Data.INVITATION_DELETE}}</a-button>
         </a-space>
       </span>
     </a-table>
@@ -55,6 +55,7 @@ const columns = [
   },
   {
     title: '邀请码',
+    titleIn18Key: 'INVITATION_CODE',
     dataIndex: 'code',
     key: 'code',
     scopedSlots: { customRender: 'code' },
@@ -62,6 +63,7 @@ const columns = [
   },
   {
     title: '状态',
+    titleIn18Key: 'ADMIN_TABLE_TITLE_STATUS',
     dataIndex: 'is_used',
     key: 'is_used',
     scopedSlots: { customRender: 'is_used' },
@@ -70,6 +72,7 @@ const columns = [
   },
   {
     title: '动作',
+    titleIn18Key: 'ADMIN_TABLE_TITLE_ACTION',
     scopedSlots: { customRender: 'action' },
     width: '200px',
     align: 'center'
@@ -93,7 +96,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user', 'host', 'buildGetQuery'])
+    ...mapState(['user', 'host', 'buildGetQuery', 'in18Data'])
   },
   methods: {
     ...mapMutations(['updateCurrentPage']),
@@ -185,15 +188,23 @@ export default {
           page: page
         }
       })
+    },
+    updateTableColumnTitle() {
+      for (let item of this.columns) {
+        if (item.titleIn18Key) {
+          item.title = this.in18Data[item.titleIn18Key]
+        }
+      }
     }
   },
   created() {
     this.updateCurrentPage({
       page: 'invitation',
       icon: 'link',
-      title: '邀请码管理'
+      title: this.in18Data.INVITATION_PAGE_TITLE
     })
     this.getData()
+    this.updateTableColumnTitle()
   },
   watch: {
     '$route': function () {

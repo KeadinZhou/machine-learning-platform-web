@@ -1,8 +1,8 @@
 <template>
   <div class="project-main-box">
     <div class="project-title">
-      <span v-if="!otherUser">选择你要编辑的项目</span>
-      <span v-else>选择你要查看的 <b>{{otherUsername}}</b> 的项目</span>
+      <span v-if="!otherUser">{{in18Data.PROJECTS_CHOOSES_ONE}}</span>
+      <span v-else>{{in18Data.PROJECTS_CHOOSES_ONE}} [<b>{{otherUsername}}</b>] </span>
     </div>
     <loading-box-frame v-if="loading"></loading-box-frame>
     <div class="project-item-box" v-else>
@@ -32,7 +32,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user', 'host', 'buildGetQuery'])
+    ...mapState(['user', 'host', 'buildGetQuery', 'in18Data'])
   },
   methods: {
     ...mapMutations(['updateCurrentPage']),
@@ -91,7 +91,7 @@ export default {
     this.updateCurrentPage({
       page: 'project',
       icon: 'folder-open',
-      title: '项目列表'
+      title: this.in18Data.PROJECTS_PAGE_TITLE
     })
     this.getData()
   },
