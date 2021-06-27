@@ -253,7 +253,8 @@ export default new Vuex.Store({
       let that = this._vm
       let self = this
       let value = localStorage.getItem(ML_IN18_VALUE)
-      state.in18Value = value?value:'zh'
+      value = value?value:'zh'
+      state.in18Value = value
       that.$http.get(state.host + `/configuration`)
         .then(data => {
           state.configuration = {}
@@ -262,7 +263,6 @@ export default new Vuex.Store({
             state.configuration[item.key] = item.value
           }
           self.commit('updateDocumentTitle', state.configuration[`${value}-title`])
-          console.log(state.configuration)
         })
         .catch((error) => {
           if (error.response) {
@@ -278,7 +278,6 @@ export default new Vuex.Store({
       document.title = data
     },
     loadIn18Config(state, data) {
-      console.log(data)
       if (!data) {
         data = state.in18Value
       }
