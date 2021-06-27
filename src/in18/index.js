@@ -51,6 +51,14 @@ const in18_data = {
     zh: '两次密码不一致',
     en: 'Entered Passwords Differ'
   },
+  OLD_PASSWORD: {
+    zh: '原密码',
+    en: 'Old Password'
+  },
+  NEW_PASSWORD: {
+    zh: '新密码',
+    en: 'New Password'
+  },
   WRONG_PASSWORD_LENGTH: {
     zh: '密码长度必须在 8 至 16 之间',
     en: 'Length must be between 8 and 16'

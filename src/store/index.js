@@ -11,7 +11,7 @@ const ML_IN18_VALUE = 'ML_IN18_VALUE'
 
 const defaultConfiguration = {
   "zh-image": 'login.jpg',
-  "zh-title": '人工智能可视化建模平台',
+  "zh-title": 'SAFFI决策支持系统',
   "en-image": "",
   "en-title": "Visual Modeling Platform"
 }
@@ -278,6 +278,7 @@ export default new Vuex.Store({
       document.title = data
     },
     loadIn18Config(state, data) {
+      console.log(data)
       if (!data) {
         data = state.in18Value
       }

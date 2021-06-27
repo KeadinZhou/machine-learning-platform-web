@@ -23,7 +23,7 @@ const checkPasswordStrength = function (password) {
       upperCnt++
     } else if (/[a-z]/.test(x)) {
       lowerCnt++
-    } else if (/[0-1]/.test(x)) {
+    } else if (/[0-9]/.test(x)) {
       numberCnt++
     } else {
       otherCnt++
