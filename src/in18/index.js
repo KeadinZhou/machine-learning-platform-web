@@ -51,6 +51,14 @@ const in18_data = {
     zh: '两次密码不一致',
     en: 'Entered Passwords Differ'
   },
+  WRONG_PASSWORD_LENGTH: {
+    zh: '密码长度必须在 8 至 16 之间',
+    en: 'Length must be between 8 and 16'
+  },
+  WEAK_PASSWORD: {
+    zh: '密码必须包含大写字母、小写字母和数字',
+    en: 'Must contain uppercase, lowercase, and numeric letters'
+  },
   ORGANIZATION: {
     zh: '组织名称',
     en: 'Organization'

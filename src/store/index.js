@@ -5,7 +5,7 @@ import in18 from "@/in18";
 
 Vue.use(Vuex)
 
-const host = 'https://ml-api.newitd.com'
+const host = 'http://47.98.230.206:5002'
 
 const ML_IN18_VALUE = 'ML_IN18_VALUE'
 

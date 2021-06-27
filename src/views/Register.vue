@@ -56,6 +56,7 @@
 
 <script>
 import {mapState} from "vuex";
+import passer from "@/util/Passer"
 
 export default {
   name: "Register",
@@ -72,7 +73,7 @@ export default {
       },
       rules: {
         username: [{ required: true, message: '', trigger: 'blur' },],
-        password: [{ required: true, message: '', trigger: 'blur' },],
+        password: [{ required: true, message: '', trigger: 'blur' }, { validator: this.weakPasswordCheck, trigger: 'change' }],
         password2: [{ required: true, message: '', trigger: 'blur' }, { validator: this.password2check, trigger: 'change' }],
         captcha: [{ required: true, message: '', trigger: 'blur' },],
         organization : [{ required: true, message: '', trigger: 'blur' },],
@@ -90,6 +91,15 @@ export default {
       } else {
         callback()
       }
+    },
+    weakPasswordCheck(rule, value, callback) {
+      if (!passer.checkPasswordLength(value)) {
+        callback(new Error(this.in18Data.WRONG_PASSWORD_LENGTH))
+      }
+      if (!passer.checkPasswordStrength(value)) {
+        callback(new Error(this.in18Data.WEAK_PASSWORD))
+      }
+      callback()
     },
     register() {
       let that = this
