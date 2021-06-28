@@ -203,6 +203,10 @@ const in18_data = {
     zh: '保存',
     en: 'Save'
   },
+  IMPORT: {
+    zh: '导入',
+    en: 'Import'
+  },
   WARNING: {
     zh: '警告',
     en: 'WARNING'
@@ -227,6 +231,14 @@ const in18_data = {
     zh: '编辑项目',
     en: 'Edit Project'
   },
+  PROJECT_SHARE: {
+    zh: '分享项目',
+    en: 'Share Project'
+  },
+  PROJECT_SHARE_CODE: {
+    zh: '项目分享码',
+    en: 'Project Sharing Code'
+  },
   PROJECT_DELETE: {
     zh: '删除项目',
     en: 'Delete Project'
@@ -242,6 +254,18 @@ const in18_data = {
   PROJECT_TAG: {
     zh: '项目标签',
     en: 'Project Tag'
+  },
+  PROJECT_CREATE_NEW: {
+    zh: '创建一个新项目',
+    en: 'Create a new project'
+  },
+  PROJECT_IMPORT_BY_SHARE_CODE: {
+    zh: '通过分享码导入',
+    en: 'Import by sharing code'
+  },
+  PROJECT_IMPORT_BY_UPLOAD: {
+    zh: '从本地上传导入',
+    en: 'Import by uploading'
   },
   DICT_INPUT_ABOUT: {
     zh: '模型参数说明',
