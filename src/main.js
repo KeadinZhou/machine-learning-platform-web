@@ -19,6 +19,14 @@ Vue.use(VueClipboard)
 
 axios.defaults.withCredentials = true
 Vue.prototype.$http = axios
+
+// Vue.prototype.$http = axios.create({
+//   timeout: 15000,
+//   headers: {
+//     'Content-Type': "application/json; charset=utf-8"
+//   }
+// })
+
 Vue.prototype.$moment = moment
 
 new Vue({
