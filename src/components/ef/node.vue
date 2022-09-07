@@ -279,6 +279,14 @@ export default {
     },
     showFileClick() {
       let output_type = this.nodeType.get(this.node.type).output_type
+
+      // 输出节点类型
+      let nodeExtra = this.nodeExtra.get(String(this.node.id))
+      if(nodeExtra["output_type"]){
+        console.log(this.node.id+nodeExtra["output_type"])
+        output_type = nodeExtra["output_type"]
+      }
+
       switch (output_type) {
         case 0: {
           this.filenameList = []
@@ -347,6 +355,7 @@ export default {
     if (nodeExtra["newName"]){
       this.node.name = nodeExtra["newName"]
     }
+
   }
 }
 </script>
