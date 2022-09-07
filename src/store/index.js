@@ -93,10 +93,12 @@ export default new Vuex.Store({
     login(state, user) {
       let that = this._vm
       let sendData = new FormData()
+      console.log(user)
       sendData.append('username', user.username)
       sendData.append('password', user.password)
       sendData.append('captcha', user.captcha)
-      that.$http.post(state.host + '/session', sendData)
+      console.log(sendData.toString())
+      that.$http.post(state.host + '/session', user)
         .then(() => {
           this.commit('updateUser', true)
         })
@@ -168,6 +170,39 @@ export default new Vuex.Store({
         })
         .finally(() => {
         })
+    },
+    // 重命名保存到extra中
+    saveNodeRenameExtra(state, data) {
+      if (typeof data.id !== "string") {
+        data.id = String(data.id)
+      }
+      let old = state.nodeExtra.get(String(data.id))
+      if (!old) {
+        old = {}
+      }
+      for (let item in data.extra) {
+        old[item] = data.extra[item]
+      }
+      state.nodeExtra.set(data.id, old)
+      let that = this._vm
+      let sendData = new FormData()
+      sendData.append('extra', JSON.stringify(old))
+      console.log(sendData)
+      that.$http.put(state.host + `/node/${data.id}`, sendData)
+          .then(() => {
+            if (data.showMsg) {
+              that.$message.success('保存成功')
+            }
+          })
+          .catch((error) => {
+            if (error.response) {
+              that.$message.error(error.response.data.message)
+            } else {
+              that.$message.error('请求失败')
+            }
+          })
+          .finally(() => {
+          })
     },
     deleteNodeInServer(state, node_id) {
       let that = this._vm

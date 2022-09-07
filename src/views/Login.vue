@@ -67,6 +67,7 @@ export default {
       let that = this
       that.$refs["loginForm"].validate(valid => {
         if (valid) {
+          console.log(this.user)
           that.$store.commit('login', this.user)
         }
       })

@@ -29,6 +29,10 @@
           <dynamic-form :params-config="paramsConfig" v-model="paramsData"></dynamic-form>
         </template>
       </a-modal>
+      <a-modal v-model="renameVisible" title="重命名节点" :maskClosable="false" okText="保存" cancelText="取消" @ok="setNewName">
+        <el-input v-model="renameValue" placeholder="请输入新的节点名"  style="width: 100%" size="medium">
+        </el-input>
+      </a-modal>
       <a-modal v-model="nodeLogVisible" title="运行日志" :maskClosable="false" okText="确定" cancelText="取消" @ok="nodeLogVisible = false" width="1000px">
         <a-descriptions bordered>
           <a-descriptions-item label="运行状态" :span="3">
@@ -87,6 +91,9 @@
       <a-menu-item key="4" @click="showFileClick">
         读取结果
       </a-menu-item>
+      <a-menu-item key="7" @click="reNameNode">
+        节点重命名
+      </a-menu-item>
       <a-menu-item key="6" @click="showPredict" v-if="node.name.indexOf('机器学习') !== -1">
         <span style="color: blue">结果预测</span>
       </a-menu-item>
@@ -120,6 +127,8 @@ export default {
     return {
       height: window.innerHeight,
       modalVisible: false,
+      renameValue: '',
+      renameVisible: false,
       submitting: false,
       clickedTarget: null,
       paramsConfig: [],
@@ -162,7 +171,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['saveNodeExtra']),
+    ...mapMutations(['saveNodeExtra','saveNodeRenameExtra']),
     // 点击节点
     clickNode() {
       this.$emit('clickNode', this.node.id)
@@ -211,6 +220,12 @@ export default {
         }
       }
       this.setParamsSubmit()
+    },
+    setNewName(){
+      this.node.name = this.renameValue
+      this.renameVisible = false
+      this.paramsData["newName"] = this.renameValue
+      this.saveNodeRenameExtra({id: this.node.id, extra: this.paramsData, showMsg: true})
     },
     setParamsSubmit() {
       this.modalVisible = false
@@ -264,6 +279,14 @@ export default {
     },
     showFileClick() {
       let output_type = this.nodeType.get(this.node.type).output_type
+
+      // 输出节点类型
+      let nodeExtra = this.nodeExtra.get(String(this.node.id))
+      if(nodeExtra["output_type"]){
+        console.log(this.node.id+nodeExtra["output_type"])
+        output_type = nodeExtra["output_type"]
+      }
+
       switch (output_type) {
         case 0: {
           this.filenameList = []
@@ -283,6 +306,10 @@ export default {
       this.csvVisible = true
       this.getFile(this.filenameChoose)
     },
+    reNameNode(){
+      this.renameVisible =true
+    },
+
     showPredict() {
       this.outputInteger = (this.node.name.indexOf('分类') !== -1)
       this.predictVisible = true
@@ -323,5 +350,12 @@ export default {
           })
     },
   },
+  created() {
+    let nodeExtra = this.nodeExtra.get(String(this.node.id))
+    if (nodeExtra["newName"]){
+      this.node.name = nodeExtra["newName"]
+    }
+
+  }
 }
 </script>
